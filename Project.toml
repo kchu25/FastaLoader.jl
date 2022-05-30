@@ -1,0 +1,13 @@
+name = "FastaLoader"
+uuid = "139838d8-4077-4d8a-94e1-e6dd554a184c"
+authors = ["Shane Kuei Hsien Chu (skchu@wustl.edu)"]
+version = "0.1.0"
+
+[compat]
+julia = "1.7.2"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
