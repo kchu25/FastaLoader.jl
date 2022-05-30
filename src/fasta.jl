@@ -4,8 +4,8 @@ struct FASTA_DNA{S <: Real}
     acgt_freq::Vector{S}
     markov_bg_mat::Matrix{S}
     raw_data::Vector{String}
-    data_matrix::Matrix{S}
-    data_matrix_bg::Matrix{S}
+    data_matrix::Array{S,4}
+    data_matrix_bg::Array{S,4}
     # data_matrix_bg_prob::Union{Nothing, Matrix{S}}
 
     function FASTA_DNA{S}(fasta_location::String, 
