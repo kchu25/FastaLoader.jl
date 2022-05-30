@@ -1,5 +1,5 @@
 module FastaLoader
 
-# Write your package code here.
+println("hi")
 
 end
