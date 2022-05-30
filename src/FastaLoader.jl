@@ -1,5 +1,11 @@
 module FastaLoader
 
-println("hi")
+using SeqShuffle
+
+export FASTA_DNA
+
+include("constants.jl")
+include("helpers.jl")
+include("fasta.jl")
 
 end
