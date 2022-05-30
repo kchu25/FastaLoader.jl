@@ -10,8 +10,8 @@ SeqShuffle = "5ea955a8-74dc-49b5-be65-6ee01fc504f7"
 
 [compat]
 Documenter = "0.27.18"
-DocumenterTools = "0.1.14"
 SeqShuffle = "0.2.0"
+DocumenterTools = "0.1.14"
 julia = "1.7.2"
 
 [extras]
