@@ -20,8 +20,8 @@ struct FASTA_DNA{S <: Real}
         acgt_freq,
         markov_bg_mat,
         dna_read,
-        reshape(data_matrix, L, 1, 1, 4*N),
-        reshape(data_matrix_bg, L, 1, 1, 4*N))    
+        reshape(data_matrix, 4*L, 1, 1, N),
+        reshape(data_matrix_bg, 4*L, 1, 1, N))    
     end
 end
 
