@@ -67,3 +67,5 @@ function get_data_matrices(dna_read; k=2, FloatType=dat_t)
 
     return data_matrix, data_matrix_bg, data_bg_prob, acgt_freq, markov_mat
 end
+
+# println("!23")

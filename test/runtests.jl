@@ -5,7 +5,7 @@ using Test
     fp = "MA0463.1.sites";
     @test isfile(fp)
 
-    data = FASTA_DNA{Int32, Float32}(fp);
+    data = FASTA_DNA{Float32}(fp);
     println("Data $fp loaded."); 
     
     @test data.L == 114
