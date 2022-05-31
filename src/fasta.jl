@@ -4,9 +4,8 @@ struct FASTA_DNA{S <: Real}
     acgt_freq::Vector{S}
     markov_bg_mat::Matrix{S}
     raw_data::Vector{String}
-    data_matrix::Array{S,4}
-    data_matrix_bg::Array{S,4}
-    # data_matrix_bg_prob::Union{Nothing, Matrix{S}}
+    data_matrix::Array{S,3}
+    data_matrix_bg::Array{S,3}
 
     function FASTA_DNA{S}(fasta_location::String, 
                         max_entries=max_num_read_fasta
@@ -20,8 +19,8 @@ struct FASTA_DNA{S <: Real}
         acgt_freq,
         markov_bg_mat,
         dna_read,
-        reshape(data_matrix, 4*L, 1, 1, N),
-        reshape(data_matrix_bg, 4*L, 1, 1, N))    
+        reshape(data_matrix, 4*L, 1, N),
+        reshape(data_matrix_bg, 4*L, 1, N))    
     end
 end
 
