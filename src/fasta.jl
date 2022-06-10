@@ -5,6 +5,7 @@ struct FASTA_DNA{S <: Real}
     markov_bg_mat::Matrix{S}
     raw_data::Vector{String}
     data_matrix::Array{S,3}
+    data_matrix_gpu::CuArray{S,2}
     data_matrix_bg::Array{S,3}
 
     function FASTA_DNA{S}(fasta_location::String, 
@@ -13,13 +14,15 @@ struct FASTA_DNA{S <: Real}
     dna_read = read_fasta(fasta_location; max_entries);
     data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat = get_data_matrices(dna_read; FloatType=S);
     N = length(dna_read); L = Int(size(data_matrix,1)/4);
+    data_matrix = reshape(data_matrix, 4*L, 1, N);
     new(        
         N,
         L,
         acgt_freq,
         markov_bg_mat,
         dna_read,
-        reshape(data_matrix, 4*L, 1, N),
+        data_matrix,
+        cu(data_matrix),
         reshape(data_matrix_bg, 4*L, 1, N))    
     end
 end

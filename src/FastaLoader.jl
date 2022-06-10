@@ -1,6 +1,6 @@
 module FastaLoader
 
-using SeqShuffle
+using SeqShuffle, CUDA
 
 export FASTA_DNA
 include("constants.jl")
