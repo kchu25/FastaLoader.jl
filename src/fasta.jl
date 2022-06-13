@@ -1,4 +1,4 @@
-struct FASTA_DNA{S <: Real}
+mutable struct FASTA_DNA{S <: Real}
     N::Int
     L::Int
     acgt_freq::Vector{S}
