@@ -6,7 +6,7 @@ struct FASTA_DNA{S <: Real}
     raw_data::Vector{String}
     data_matrix::Union{Array{S,3}, Array{S,2}}
     data_matrix_gpu::Union{CuArray{S,3}, CuArray{S,2}}
-    data_matrix_bg::Union{Array{S,3},Array{S,2}}
+    data_matrix_bg::Union{Array{S,3}, Array{S,2}}
 
     function FASTA_DNA{S}(fasta_location::String, 
                         max_entries=max_num_read_fasta

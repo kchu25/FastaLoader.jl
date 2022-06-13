@@ -1,7 +1,7 @@
 name = "FastaLoader"
 uuid = "139838d8-4077-4d8a-94e1-e6dd554a184c"
 authors = ["Shane Kuei Hsien Chu (skchu@wustl.edu)"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
