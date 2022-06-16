@@ -1,20 +1,47 @@
-function reading(filepath::String, max_entries=max_num_read_fasta)
+fp = "/home/shane/Desktop/ryan.txt";
+h, d = reading(fp; get_header=true, ryan_data=true);
+
+function ryan_header_map(header_labels::Vector{String}, strs::Vector{String}; E_and_N=true)
+    if E_and_N
+        Es = BitVector(map(x->x[4]=='P' ? true : false, header_labels));
+        Ns = BitVector(map(x->x[4]=='N' ? true : false, header_labels));
+        unionEN = BitVector(Es .+ Ns); 
+        h_filtered = h[unionEN];
+        strs_filtered = strs[unionEN]
+        labels = map(x->x[4]=='P' ? 1 : 0, h_filtered);
+        return labels, strs_filtered
+    end
+end
+
+function reading(filepath::String, 
+                 max_entries=max_num_read_fasta; 
+                 get_header=false,
+                 ryan_data=false)
     # read the file
     reads = read(filepath, String);
     # process the fasta file to get the DNA part
     # rid of sequences that contains "n"
     dna_reads = Vector{String}();
+    header_labels = Vector{String}();
     for i in split(reads, '>')
         if !isempty(i)
-            this_read = join(split(i, "\n")[2:end]);        
+            splits = split(i, "\n");
+            header = splits[1];
+            this_read = join(splits[2:end]);        
             if !occursin("N", this_read) && !occursin("n", this_read)
                 push!(dna_reads, this_read);
+                ryan_data && push!(header_labels, split(header,"_")[2])
             end
         end
     end    
     # dna_reads = [join(split(i, "\n")[2:end]) for i in split(reads, '>') if !isempty(i) && !occursin("N", i)]; 
     dna_reads = length(dna_reads) > max_entries ? dna_reads[1:max_entries] : dna_reads;
-    return dna_reads
+
+    if get_header && ryan_data
+        return header_labels, dna_reads
+    else
+        return dna_reads
+    end
 end
 
 function read_fasta(filepath::String; 
