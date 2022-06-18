@@ -1,6 +1,3 @@
-fp = "/home/shane/Desktop/ryan.txt";
-h, d = reading(fp; get_header=true, ryan_data=true);
-
 function ryan_header_map(header_labels::Vector{String}, strs::Vector{String}; E_and_N=true)
     if E_and_N
         Es = BitVector(map(x->x[4]=='P' ? true : false, header_labels));
@@ -13,8 +10,8 @@ function ryan_header_map(header_labels::Vector{String}, strs::Vector{String}; E_
     end
 end
 
-function reading(filepath::String, 
-                 max_entries=max_num_read_fasta; 
+function reading(filepath::String;
+                 max_entries=max_num_read_fasta,
                  get_header=false,
                  ryan_data=false)
     # read the file
