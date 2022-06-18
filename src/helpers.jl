@@ -45,7 +45,7 @@ function read_fasta(filepath::String;
                     max_entries=max_num_read_fasta
                     )::Vector{String}
     #= read a fasta file =#
-    dna_reads = reading(filepath, max_entries);   
+    dna_reads = reading(filepath; max_entries);   
     # convert all DNA seqeunce to uppercase
     return [uppercase(i) for i in dna_reads]
 end
