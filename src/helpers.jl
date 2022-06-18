@@ -10,6 +10,20 @@ function ryan_header_map(header_labels::Vector{String}, strs::Vector{String}; E_
     end
 end
 
+function ryan_map(header_labels::Vector{String}, strs::Vector{String}; pts_at_least=200)
+    # take only labels that contains more than pts_at_least data points
+    dcount = countmap(header_labels);
+    labels = dcount.keys[dcount.vals .> pts_at_least]; # lables that got more data
+    indicators = map(x-> x ∈ labels ? true : false, h);
+    return header_labels[indicators], strs[indicators]
+end
+
+# h, d = FastaLoader.reading(fp; get_header=true, ryan_data=true);
+
+function get_count_map(v)
+    return countmap(v)
+end
+
 function reading(filepath::String;
                  max_entries=max_num_read_fasta,
                  get_header=false,
