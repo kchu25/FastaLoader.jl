@@ -14,7 +14,7 @@ mutable struct FASTA_DNA_w_splits{S <: Real}
 
     labels::Vector{String}
     label_indicators::BitMatrix # note that label indicators includes all labels and is not shuffled
-    label_indicators_gpu::CuArray{S,2}
+    label_indicators_gpu::CuArray{Bool,2}
     raw_data::Vector{String}
 
     acgt_freq::Vector{S}
