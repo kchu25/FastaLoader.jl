@@ -74,13 +74,15 @@ function read_ryan_fasta(all_labels::Vector{String};
     class_indices = [findall(@view class_indicators[:,i]) for i = 1:size(class_indicators,2)]    
     shuffles_class_indices = shuffle_this ? shuffle.(class_indices) : class_indices;
     # note that class_indicators is not shuffled
-    return shuffles_class_indices, class_indicators
+    # TODO: remove allocations later
+    return shuffles_class_indices, Array(class_indicators') 
 end
 
 function make_FASTA_DNA_w_splits(fp::String; 
                                  class_selector=read_ryan_fasta, 
                                  split_ratio=0.85,
                                  folds=5,
+                                 flux=true,
                                  float_type=Float32)
     all_labels, all_dna_read = get_ryan_fasta_str_labels(fp);
     shuffles_class_indices, class_indicators = class_selector(all_labels);
@@ -93,7 +95,7 @@ function make_FASTA_DNA_w_splits(fp::String;
                 );
     data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat = FastaLoader.get_data_matrices(all_dna_read; 
                                                                                  FloatType=float_type);
-    return FASTA_DNA_w_splits(mcs, 
+    fws = FASTA_DNA_w_splits(mcs, 
                               all_labels,
                               class_indicators,
                               cu(class_indicators),
@@ -104,6 +106,7 @@ function make_FASTA_DNA_w_splits(fp::String;
                               cu(data_matrix),
                               data_matrix_bg
                               );
+    flux && fasta_reshape_for_flux!(fws);
 end
 
 function get_test_set_ind(mcs::multiple_class_splits)
@@ -148,20 +151,20 @@ end
 function get_test_set_for_flux(fws::FASTA_DNA_w_splits; gpu=true)
     test_set_ind = get_test_set_ind(fws.mcs);
     if gpu
-        return fws.data_matrix_gpu[:,:,test_set_ind], fws.label_indicators_gpu[test_set_ind,:]
+        return fws.data_matrix_gpu[:,:,test_set_ind], fws.label_indicators_gpu[:,test_set_ind]
     else
-        return fws.data_matrix[:,:,test_set_ind], fws.label_indicators[test_set_ind,:]
+        return fws.data_matrix[:,:,test_set_ind], fws.label_indicators[:,test_set_ind]
     end
 end
 
 function get_train_fold_for_flux(fws::FASTA_DNA_w_splits, fold::Int; gpu=true)
     train_set_ind, valid_set_ind = get_train_fold_ind(fws.mcs, fold)
     if gpu
-        return fws.data_matrix_gpu[:,:,train_set_ind],  fws.label_indicators_gpu[train_set_ind,:]
-               fws.data_matrix_gpu[:,:,valid_set_ind],  fws.label_indicators_gpu[valid_set_ind,:]
+        return fws.data_matrix_gpu[:,:,train_set_ind],  fws.label_indicators_gpu[:,train_set_ind]
+               fws.data_matrix_gpu[:,:,valid_set_ind],  fws.label_indicators_gpu[:,valid_set_ind]
     else
-        return fws.data_matrix[:,:,train_set_ind], fws.label_indicators[train_set_ind,:]
-               fws.data_matrix[:,:,valid_set_ind], fws.label_indicators[valid_set_ind,:]
+        return fws.data_matrix[:,:,train_set_ind], fws.label_indicators[:,train_set_ind]
+               fws.data_matrix[:,:,valid_set_ind], fws.label_indicators[:,valid_set_ind]
     end
 end
 
