@@ -147,11 +147,21 @@ end
 
 function get_test_set_for_flux(fws::FASTA_DNA_w_splits; gpu=true)
     test_set_ind = get_test_set_ind(fws.mcs);
-    return fws.data_matrix_gpu[:,:,test_set_ind], fws.label_indicators_gpu[test_set_ind,:]
+    if gpu
+        return fws.data_matrix_gpu[:,:,test_set_ind], fws.label_indicators_gpu[test_set_ind,:]
+    else
+        return fws.data_matrix[:,:,test_set_ind], fws.label_indicators[test_set_ind,:]
+    end
 end
 
 function get_train_fold_for_flux(fws::FASTA_DNA_w_splits, fold::Int; gpu=true)
     train_set_ind, valid_set_ind = get_train_fold_ind(fws.mcs, fold)
-    return fws.data_matrix_gpu[:,:,train_set_ind], fws.label_indicators_gpu[valid_set_ind,:]
+    if gpu
+        return fws.data_matrix_gpu[:,:,train_set_ind],  fws.label_indicators_gpu[train_set_ind,:]
+               fws.data_matrix_gpu[:,:,valid_set_ind],  fws.label_indicators_gpu[valid_set_ind,:]
+    else
+        return fws.data_matrix[:,:,train_set_ind], fws.label_indicators[train_set_ind,:]
+               fws.data_matrix[:,:,valid_set_ind], fws.label_indicators[valid_set_ind,:]
+    end
 end
 
