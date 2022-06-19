@@ -42,10 +42,11 @@ mutable struct FASTA_DNA{S <: Real}
     end
 end
 
-
 get_N(d::FASTA_DNA) = d.N;
 get_L(d::FASTA_DNA) = d.L;
 get_data_matrix(d::FASTA_DNA) = d.data_matrix;
 get_data_matrix_bg(d::FASTA_DNA) = d.data_matrix_bg;
+
+
 
 

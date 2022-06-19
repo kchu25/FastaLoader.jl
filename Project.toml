@@ -7,6 +7,7 @@ version = "0.1.6"
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 DocumenterTools = "35a29f4d-8980-5a13-9543-d66fff28ecb8"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SeqShuffle = "5ea955a8-74dc-49b5-be65-6ee01fc504f7"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
