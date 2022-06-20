@@ -13,7 +13,8 @@ mutable struct FASTA_DNA_w_splits{S <: Real}
     mcs::multiple_class_splits
 
     labels::Vector{String}
-    label_indicators::BitMatrix # note that label indicators includes all labels and is not shuffled
+    valid_labels::Vector{String}
+    label_indicators::Union{Matrix{Bool}, BitMatrix} # note that label indicators includes all labels and is not shuffled
     label_indicators_gpu::CuArray{Bool,2}
     raw_data::Vector{String}
 
@@ -75,7 +76,7 @@ function read_ryan_fasta(all_labels::Vector{String};
     shuffles_class_indices = shuffle_this ? shuffle.(class_indices) : class_indices;
     # note that class_indicators is not shuffled
     # TODO: remove allocations later
-    return shuffles_class_indices, Array(class_indicators') 
+    return shuffles_class_indices, valid_labels, Array(class_indicators') 
 end
 
 function make_FASTA_DNA_w_splits(fp::String; 
@@ -85,7 +86,7 @@ function make_FASTA_DNA_w_splits(fp::String;
                                  flux=true,
                                  float_type=Float32)
     all_labels, all_dna_read = get_ryan_fasta_str_labels(fp);
-    shuffles_class_indices, class_indicators = class_selector(all_labels);
+    shuffles_class_indices, valid_labels, class_indicators = class_selector(all_labels);
     # split each class to have train and test set
     mcs = multiple_class_splits(
                 train_test_split.(shuffles_class_indices; 
@@ -97,6 +98,7 @@ function make_FASTA_DNA_w_splits(fp::String;
                                                                                  FloatType=float_type);
     fws = FASTA_DNA_w_splits(mcs, 
                               all_labels,
+                              valid_labels,
                               class_indicators,
                               cu(class_indicators),
                               all_dna_read,
@@ -107,6 +109,7 @@ function make_FASTA_DNA_w_splits(fp::String;
                               data_matrix_bg
                               );
     flux && fasta_reshape_for_flux!(fws);
+    return fws
 end
 
 function get_test_set_ind(mcs::multiple_class_splits)
@@ -160,10 +163,10 @@ end
 function get_train_fold_for_flux(fws::FASTA_DNA_w_splits, fold::Int; gpu=true)
     train_set_ind, valid_set_ind = get_train_fold_ind(fws.mcs, fold)
     if gpu
-        return fws.data_matrix_gpu[:,:,train_set_ind],  fws.label_indicators_gpu[:,train_set_ind]
+        return fws.data_matrix_gpu[:,:,train_set_ind],  fws.label_indicators_gpu[:,train_set_ind],
                fws.data_matrix_gpu[:,:,valid_set_ind],  fws.label_indicators_gpu[:,valid_set_ind]
     else
-        return fws.data_matrix[:,:,train_set_ind], fws.label_indicators[:,train_set_ind]
+        return fws.data_matrix[:,:,train_set_ind], fws.label_indicators[:,train_set_ind],
                fws.data_matrix[:,:,valid_set_ind], fws.label_indicators[:,valid_set_ind]
     end
 end
