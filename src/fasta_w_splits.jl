@@ -14,8 +14,8 @@ mutable struct FASTA_DNA_w_splits{S <: Real}
 
     labels::Vector{String}
     valid_labels::Vector{String}
-    label_indicators::Union{Matrix{Bool}, BitMatrix} # note that label indicators includes all labels and is not shuffled
-    label_indicators_gpu::CuArray{Bool,2}
+    label_indicators::Union{Matrix{Bool}, BitMatrix, Matrix{S}} # note that label indicators includes all labels and is not shuffled
+    label_indicators_gpu::Union{CuArray{Bool,2}, CuArray{S,2}}
     raw_data::Vector{String}
 
     acgt_freq::Vector{S}
@@ -61,6 +61,30 @@ function get_ryan_fasta_str_labels(fasta_location::String)
     return all_labels, all_dna_read
 end
 
+
+#############################
+function ryan_header_map(header_labels::Vector{String}, strs::Vector{String}; E_and_N=true)
+    if E_and_N
+        Es = BitVector(map(x->x[4]=='E' ? true : false, header_labels));
+        Ns = BitVector(map(x->x[4]=='N' ? true : false, header_labels));
+        unionEN = BitVector(Es .+ Ns); 
+        h_filtered = h[unionEN];
+        strs_filtered = strs[unionEN]
+        labels = map(x->x[4]=='E' ? 1 : 0, h_filtered);
+        return labels, strs_filtered
+    end
+end
+
+function ryan_map(header_labels::Vector{String}, strs::Vector{String}; pts_at_least=200)
+    # take only labels that contains more than pts_at_least data points
+    dcount = countmap(header_labels);
+    labels = dcount.keys[dcount.vals .> pts_at_least]; # lables that got more data
+    indicators = map(x-> x ∈ labels ? true : false, h);
+    return header_labels[indicators], strs[indicators]
+end
+
+#############################
+
 function read_ryan_fasta(all_labels::Vector{String}; 
                          shuffle_this=true, 
                          count_thresh=label_count_thresh)
@@ -70,7 +94,15 @@ function read_ryan_fasta(all_labels::Vector{String};
     # This only returns classes that have a sufficient amount of data (count_thresh).
     dcount = FastaLoader.get_count_map(all_labels); # count the number data point asscociated with each label
     ks = [k for k in keys(dcount)]; vals = [v for v in values(dcount)];
-    valid_labels = ks[vals .> count_thresh]; # labels that got more data to be considered valid    
+    valid_labels = ks[vals .> count_thresh]; # labels that got more data to be considered valid
+
+    # class_indicators = nothing;
+    # if E_and_N_only
+    #     # class_indicators = reduce(hcat, [ .== v for v in valid_labels]); # bitarrays for class indicates
+    # else
+    #     class_indicators = reduce(hcat, [all_labels .== v for v in valid_labels]); # bitarrays for class indicates
+    # end
+
     class_indicators = reduce(hcat, [all_labels .== v for v in valid_labels]); # bitarrays for class indicates
     class_indices = [findall(@view class_indicators[:,i]) for i = 1:size(class_indicators,2)]    
     shuffles_class_indices = shuffle_this ? shuffle.(class_indices) : class_indices;
@@ -84,9 +116,10 @@ function make_FASTA_DNA_w_splits(fp::String;
                                  split_ratio=0.85,
                                  folds=5,
                                  flux=true,
+                                 count_thresh=label_count_thresh,
                                  float_type=Float32)
     all_labels, all_dna_read = get_ryan_fasta_str_labels(fp);
-    shuffles_class_indices, valid_labels, class_indicators = class_selector(all_labels);
+    shuffles_class_indices, valid_labels, class_indicators = class_selector(all_labels; count_thresh=count_thresh);
     # split each class to have train and test set
     mcs = multiple_class_splits(
                 train_test_split.(shuffles_class_indices; 
@@ -96,6 +129,7 @@ function make_FASTA_DNA_w_splits(fp::String;
                 );
     data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat = FastaLoader.get_data_matrices(all_dna_read; 
                                                                                  FloatType=float_type);
+    class_indicators = float_type.(class_indicators);
     fws = FASTA_DNA_w_splits(mcs, 
                               all_labels,
                               valid_labels,

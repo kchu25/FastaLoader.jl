@@ -14,18 +14,6 @@ function chunk(arr, n)
     return chunks
 end
 
-function ryan_header_map(header_labels::Vector{String}, strs::Vector{String}; E_and_N=true)
-    if E_and_N
-        Es = BitVector(map(x->x[4]=='P' ? true : false, header_labels));
-        Ns = BitVector(map(x->x[4]=='N' ? true : false, header_labels));
-        unionEN = BitVector(Es .+ Ns); 
-        h_filtered = h[unionEN];
-        strs_filtered = strs[unionEN]
-        labels = map(x->x[4]=='P' ? 1 : 0, h_filtered);
-        return labels, strs_filtered
-    end
-end
-
 function ryan_map(header_labels::Vector{String}, strs::Vector{String}; pts_at_least=200)
     # take only labels that contains more than pts_at_least data points
     dcount = countmap(header_labels);

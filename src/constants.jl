@@ -6,4 +6,4 @@ const int_t = Int32;            # integer type
 #= each label must associated with at least 200 sequences 
    for classification 
 =#
-const label_count_thresh = 200; 
+const label_count_thresh = 250; 
