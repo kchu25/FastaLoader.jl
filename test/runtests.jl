@@ -23,7 +23,7 @@ using Test
 
     split_ratio = 0.85; folds = 5;
     all_labels, all_dna_read = FastaLoader.get_ryan_fasta_str_labels(fp2);
-    shuffles_class_indices, class_indicators = FastaLoader.read_ryan_fasta(all_labels);
+    shuffles_class_indices, valid_labels, class_indicators = FastaLoader.read_ryan_fasta(all_labels);
     # split each class to have train and test set
     mcs = FastaLoader.multiple_class_splits(
                 FastaLoader.train_test_split.(shuffles_class_indices; 
