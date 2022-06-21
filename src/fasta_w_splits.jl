@@ -195,6 +195,7 @@ function get_test_set_for_flux(fws::FASTA_DNA_w_splits; gpu=true)
 end
 
 function get_train_fold_for_flux(fws::FASTA_DNA_w_splits, fold::Int; gpu=true)
+    # TODO try view to see if that works?
     train_set_ind, valid_set_ind = get_train_fold_ind(fws.mcs, fold)
     if gpu
         return fws.data_matrix_gpu[:,:,train_set_ind],  fws.label_indicators_gpu[:,train_set_ind],
