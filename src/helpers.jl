@@ -4,7 +4,6 @@ function get_count_map(v)
     return countmap(v)
 end
 
-
 function reading(filepath::String;
                  max_entries=max_num_read_fasta,
                  get_header=false,
