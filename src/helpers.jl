@@ -1,19 +1,3 @@
-# split the array into n equal-sized chunks
-function chunk(arr, n)
-    len_arr = length(arr);
-    chunk_size = div(len_arr, n)
-    chunks = Vector{Vector{eltype(arr)}}();
-    for i = 1:chunk_size:len_arr
-        if i + 2*chunk_size - 1  > len_arr
-            push!(chunks, arr[i:end]);
-            break
-        else
-            push!(chunks, arr[i:i+chunk_size-1]);
-        end
-    end
-    return chunks
-end
-
 function ryan_map(header_labels::Vector{String}, strs::Vector{String}; pts_at_least=200)
     # take only labels that contains more than pts_at_least data points
     dcount = countmap(header_labels);

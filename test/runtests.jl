@@ -34,9 +34,12 @@ using Test
     test_set_ind = FastaLoader.get_test_set_ind(mcs);
     # these test that the indicator should always only contain valid labels 
     @test sum(sum(class_indicators[:,test_set_ind], dims=1) .== 0) == 0    
-    train_set_ind, valid_set_ind = FastaLoader.get_train_fold_ind(mcs, 1);
-    @test sum(sum(class_indicators[:,train_set_ind], dims=1) .== 0) == 0
-    @test sum(sum(class_indicators[:,valid_set_ind], dims=1) .== 0) == 0
+    for fold = 1:folds
+        train_set_ind, valid_set_ind = FastaLoader.get_train_fold_ind(mcs, fold);
+        @test sum(sum(class_indicators[:,train_set_ind], dims=1) .== 0) == 0
+        @test sum(sum(class_indicators[:,valid_set_ind], dims=1) .== 0) == 0
+    end
+
 
 end
 
