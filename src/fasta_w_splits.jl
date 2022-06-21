@@ -148,7 +148,7 @@ end
 
 function get_test_set_ind(mcs::multiple_class_splits)
     test_set_ind = Vector{Int}();
-    for class_split in mcs.splits
+    for class_split in fws.mcs.splits
         append!(test_set_ind, class_split.testset)
     end
     return test_set_ind

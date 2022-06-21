@@ -5,7 +5,8 @@
 # fasta = make_FASTA_DNA_w_splits(fp2);
 
 
-# q=get_train_fold_ind(mcs, 1)
+# FastaLoader.get_train_fold_for_flux(fasta, 1) |> typeof
+# q1,q2,q3,q4=FastaLoader.get_train_fold_for_flux(fasta, 1) 
 
 
 
