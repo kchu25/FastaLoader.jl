@@ -4,6 +4,8 @@ using Test
 @testset "FastaLoader.jl" begin
     fp = "MA0463.1.sites";
     fp2 = "ryan.txt";
+    fp3 = "supp3.txt"
+    fp4 = "coor.fa"
     @test isfile(fp)
     @test isfile(fp2)
 
@@ -40,6 +42,38 @@ using Test
         @test sum(sum(class_indicators[:,valid_set_ind], dims=1) .== 0) == 0
     end
 
-
+    two_class = true;
+    all_labels, all_dna_read = FastaLoader.read_supp3(fp3, fp4; two_class=two_class);
+    shuffles_class_indices, valid_labels, class_indicators = FastaLoader.read_ryan_fasta(all_labels);
+    mcs = FastaLoader.multiple_class_splits(
+                FastaLoader.train_test_split.(shuffles_class_indices; 
+                                  split_ratio=split_ratio, 
+                                  folds=folds),
+                folds
+                );
+    test_set_ind = FastaLoader.get_test_set_ind(mcs);
+    @test sum(sum(class_indicators[:,test_set_ind], dims=1) .== 0) == 0    
+    for fold = 1:folds
+        train_set_ind, valid_set_ind = FastaLoader.get_train_fold_ind(mcs, fold);
+        @test sum(sum(class_indicators[:,train_set_ind], dims=1) .== 0) == 0
+        @test sum(sum(class_indicators[:,valid_set_ind], dims=1) .== 0) == 0
+    end            
+    
+    two_class = false;
+    all_labels, all_dna_read = FastaLoader.read_supp3(fp3, fp4; two_class=two_class);
+    shuffles_class_indices, valid_labels, class_indicators = FastaLoader.read_ryan_fasta(all_labels);
+    mcs = FastaLoader.multiple_class_splits(
+                FastaLoader.train_test_split.(shuffles_class_indices; 
+                                  split_ratio=split_ratio, 
+                                  folds=folds),
+                folds
+                );
+    test_set_ind = FastaLoader.get_test_set_ind(mcs);
+    @test sum(sum(class_indicators[:,test_set_ind], dims=1) .== 0) == 0    
+    for fold = 1:folds
+        train_set_ind, valid_set_ind = FastaLoader.get_train_fold_ind(mcs, fold);
+        @test sum(sum(class_indicators[:,train_set_ind], dims=1) .== 0) == 0
+        @test sum(sum(class_indicators[:,valid_set_ind], dims=1) .== 0) == 0
+    end        
 end
 

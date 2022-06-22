@@ -1,6 +1,6 @@
 module FastaLoader
 
-using SeqShuffle, CUDA, StatsBase, Random
+using SeqShuffle, CUDA, StatsBase, Random, DataFrames, CSV
 
 export FASTA_DNA, 
        make_FASTA_DNA_w_splits,
@@ -14,8 +14,9 @@ export FASTA_DNA,
 include("constants.jl")
 include("helpers.jl")
 include("fasta.jl")
-include("fasta_w_splits.jl")
 include("fasta_assign.jl")
+include("fasta_w_splits.jl")
+
 
 
 end

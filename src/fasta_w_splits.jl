@@ -146,6 +146,45 @@ function make_FASTA_DNA_w_splits(fp::String;
     return fws
 end
 
+
+function make_FASTA_DNA_w_splits_activity(supp3::String, supp3_fasta::String; 
+                                 two_class=true,
+                                 class_selector=read_ryan_fasta, 
+                                 split_ratio=0.85,
+                                 folds=5,
+                                 flux=true,
+                                 count_thresh=label_count_thresh,
+                                 float_type=Float32)
+    all_labels, all_dna_read = read_supp3(supp3, supp3_fasta;two_class=two_class);
+    shuffles_class_indices, valid_labels, class_indicators = class_selector(all_labels; count_thresh=count_thresh);
+    # split each class to have train and test set
+    mcs = multiple_class_splits(
+                train_test_split.(shuffles_class_indices; 
+                                  split_ratio=split_ratio, 
+                                  folds=folds),
+                folds
+                );
+    data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat = FastaLoader.get_data_matrices(all_dna_read; 
+                                                                                 FloatType=float_type);
+    class_indicators = float_type.(class_indicators);
+    fws = FASTA_DNA_w_splits(mcs, 
+                              all_labels,
+                              valid_labels,
+                              class_indicators,
+                              cu(class_indicators),
+                              all_dna_read,
+                              acgt_freq,
+                              markov_bg_mat,
+                              data_matrix,
+                              cu(data_matrix),
+                              data_matrix_bg
+                              );
+    flux && fasta_reshape_for_flux!(fws);
+    return fws
+end
+
+
+
 function get_test_set_ind(mcs::multiple_class_splits)
     test_set_ind = Vector{Int}();
     for class_split in mcs.splits

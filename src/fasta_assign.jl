@@ -18,6 +18,24 @@ function reading_w_header(filepath::String)
     return header_tuples, dna_reads
 end
 
+function read_supp3(supp3::String, supp3_fasta::String; two_class=true)
+    df3 = DataFrame(CSV.File(supp3)); classes_we_want = nothing;
+    group_name_WT_binary = nothing;
+    if two_class
+        group_name_WT_binary = map(x-> x=="Weak enhancer" || x == "Strong enhancer" ? "Enhancer" : x, df3.group_name_WT)
+        classes_we_want = group_name_WT_binary .∈ [["Enhancer", "Silencer"]]
+    else
+        classes_we_want = df3.group_name_WT .∈ [["Weak enhancer", "Strong enhancer",  "Silencer"]];
+    end
+   
+    _, d = reading_w_header(supp3_fasta);
+    if two_class
+        return String.(group_name_WT_binary[classes_we_want]), d[classes_we_want];
+    else
+        return String.(df3.group_name_WT[classes_we_want]), d[classes_we_want];
+    end
+end
+
 
 function reading_w_chr_loc(filepath::String;
                  max_entries=max_num_read_fasta,
