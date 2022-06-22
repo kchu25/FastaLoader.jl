@@ -4,6 +4,7 @@ using SeqShuffle, CUDA, StatsBase, Random, DataFrames, CSV
 
 export FASTA_DNA, 
        make_FASTA_DNA_w_splits,
+       make_FASTA_DNA_w_splits_activity,
        get_test_set_for_flux,
        get_train_fold_for_flux,
        fasta_reshape_for_flux!,

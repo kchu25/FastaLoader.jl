@@ -11,7 +11,7 @@ function reading_w_header(filepath::String)
             chr, s = split(header_split[1],":");
             chr, s = String(chr), String(s);
             push!(header_tuples, (chr,s,e));
-            this_read = join(splits[2:end]);  
+            this_read = join(uppercase.(splits[2:end]));  
             push!(dna_reads, this_read);
         end
     end
@@ -54,7 +54,7 @@ function reading_w_chr_loc(filepath::String;
             header_split = split(splits[1],"_");
             chr, s, e = split(header_split[1],"-")
             chr, s, e = String(chr), String(s), String(e);
-            this_read = join(splits[2:end]);        
+            this_read = join(uppercase.(splits[2:end]));        
             if !occursin("N", this_read) && !occursin("n", this_read)
                 push!(dna_reads, this_read);
                 ryan_data && push!(header_labels, header_split[2])

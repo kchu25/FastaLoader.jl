@@ -121,8 +121,8 @@ function make_FASTA_DNA_w_splits(fp::String;
     all_labels, all_dna_read = get_ryan_fasta_str_labels(fp);
     shuffles_class_indices, valid_labels, class_indicators = class_selector(all_labels; count_thresh=count_thresh);
     # split each class to have train and test set
-    mcs = multiple_class_splits(
-                train_test_split.(shuffles_class_indices; 
+    mcs = FastaLoader.multiple_class_splits(
+                FastaLoader.train_test_split.(shuffles_class_indices; 
                                   split_ratio=split_ratio, 
                                   folds=folds),
                 folds
@@ -155,11 +155,11 @@ function make_FASTA_DNA_w_splits_activity(supp3::String, supp3_fasta::String;
                                  flux=true,
                                  count_thresh=label_count_thresh,
                                  float_type=Float32)
-    all_labels, all_dna_read = read_supp3(supp3, supp3_fasta;two_class=two_class);
+    all_labels, all_dna_read = FastaLoader.read_supp3(supp3, supp3_fasta; two_class=two_class);
     shuffles_class_indices, valid_labels, class_indicators = class_selector(all_labels; count_thresh=count_thresh);
     # split each class to have train and test set
-    mcs = multiple_class_splits(
-                train_test_split.(shuffles_class_indices; 
+    mcs = FastaLoader.multiple_class_splits(
+            FastaLoader.train_test_split.(shuffles_class_indices; 
                                   split_ratio=split_ratio, 
                                   folds=folds),
                 folds
