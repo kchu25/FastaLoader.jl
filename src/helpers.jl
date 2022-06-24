@@ -28,6 +28,10 @@ function reading(filepath::String;
     # dna_reads = [join(split(i, "\n")[2:end]) for i in split(reads, '>') if !isempty(i) && !occursin("N", i)]; 
     dna_reads = length(dna_reads) > max_entries ? dna_reads[1:max_entries] : dna_reads;
     
+    # rid of all dna sequences that's not the same length as sequence 1
+    # o/w markov mat assignment may report error
+    dna_reads = [s for s in dna_reads if length(s) == length(dna_reads[1])];
+
     if get_header && ryan_data
         @assert length(dna_reads) == length(header_labels)
         return header_labels, dna_reads
