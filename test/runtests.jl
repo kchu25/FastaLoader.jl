@@ -76,9 +76,9 @@ using Test
         @test sum(sum(class_indicators[:,valid_set_ind], dims=1) .== 0) == 0
     end        
 
-    fp5 = "test/MA0599.1.sites"
-    dna_read = FastaLoader.read_fasta(fp5; max_entries=10000000);
-    data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat = FastaLoader.get_data_matrices(dna_read; FloatType=Float32);
+    # fp5 = "test/MA0599.1.sites"
+    # dna_read = FastaLoader.read_fasta(fp5; max_entries=10000000);
+    # data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat = FastaLoader.get_data_matrices(dna_read; FloatType=Float32);
 
 
 end
