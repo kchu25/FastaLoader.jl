@@ -148,14 +148,18 @@ end
 
 
 function make_FASTA_DNA_w_splits_activity(supp3::String, supp3_fasta::String; 
-                                 two_class=true,
+                                 twoE_oneS=false,
+                                 strong_vs_silence=true,
+                                 reverse_complement=true,
                                  class_selector=read_ryan_fasta, 
                                  split_ratio=0.85,
                                  folds=5,
                                  flux=true,
                                  count_thresh=label_count_thresh,
                                  float_type=Float32)
-    all_labels, all_dna_read = FastaLoader.read_supp3(supp3, supp3_fasta; two_class=two_class);
+    all_labels, all_dna_read = FastaLoader.read_supp3(supp3, supp3_fasta; 
+                                                strong_vs_silence=strong_vs_silence,
+                                                reverse_complement=reverse_complement);
     shuffles_class_indices, valid_labels, class_indicators = class_selector(all_labels; count_thresh=count_thresh);
     # split each class to have train and test set
     mcs = FastaLoader.multiple_class_splits(
