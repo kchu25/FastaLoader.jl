@@ -19,9 +19,9 @@ function reading_w_header(filepath::String)
 end
 
 function read_supp3(supp3::String, supp3_fasta::String; 
-                    twoE_oneS=true, 
+                    twoE_oneS=false, 
                     strong_vs_silence=false,
-                    reverse_complement=false)
+                    reverse_comp=false)
     # get the sequences from Ryan's dataset                    
     @assert sum([twoE_oneS, strong_vs_silence]) ≤ 1 "only one extraction condition can be true"
 
@@ -51,7 +51,7 @@ function read_supp3(supp3::String, supp3_fasta::String;
         labels, seqs = String.(df3.group_name_WT[classes_we_want]), d[classes_we_want];
     end
 
-    if reverse_complement
+    if reverse_comp
         labels = [labels..., labels...] 
         seqs = [seqs..., reverse_complement.(seqs)...];
     end
