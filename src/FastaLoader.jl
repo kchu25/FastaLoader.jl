@@ -18,6 +18,6 @@ include("fasta.jl")
 include("fasta_assign.jl")
 include("fasta_w_splits.jl")
 
-
+# println("hi")
 
 end

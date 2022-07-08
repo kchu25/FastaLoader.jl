@@ -29,6 +29,7 @@ function read_supp3(supp3::String, supp3_fasta::String; two_class=true)
     end
    
     _, d = reading_w_header(supp3_fasta);
+    
     if two_class
         return String.(group_name_WT_binary[classes_we_want]), d[classes_we_want];
     else
