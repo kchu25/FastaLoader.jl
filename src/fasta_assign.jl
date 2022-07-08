@@ -18,10 +18,11 @@ function reading_w_header(filepath::String)
     return header_tuples, dna_reads
 end
 
-function read_supp3(supp3::String, supp3_fasta::String; 
+function read_supp3(supp3::String, 
+                    supp3_fasta::String; 
                     twoE_oneS=false, 
-                    strong_vs_silence=false,
-                    reverse_comp=false)
+                    strong_vs_silence=true,
+                    reverse_comp=true)
     # get the sequences from Ryan's dataset                    
     @assert sum([twoE_oneS, strong_vs_silence]) ≤ 1 "only one extraction condition can be true"
 
