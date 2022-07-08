@@ -18,24 +18,48 @@ function reading_w_header(filepath::String)
     return header_tuples, dna_reads
 end
 
-function read_supp3(supp3::String, supp3_fasta::String; two_class=true)
-    df3 = DataFrame(CSV.File(supp3)); classes_we_want = nothing;
+function read_supp3(supp3::String, supp3_fasta::String; 
+                    twoE_oneS=true, 
+                    strong_vs_silence=false,
+                    reverse_complement=false)
+    # get the sequences from Ryan's dataset                    
+    @assert sum([twoE_oneS, strong_vs_silence]) ≤ 1 "only one extraction condition can be true"
+
+    # read the labels into dataframe
+    df3 = DataFrame(CSV.File(supp3)); 
+    classes_we_want = nothing;
     group_name_WT_binary = nothing;
-    if two_class
+
+    if twoE_oneS
         group_name_WT_binary = map(x-> x=="Weak enhancer" || x == "Strong enhancer" ? "Enhancer" : x, df3.group_name_WT)
         classes_we_want = group_name_WT_binary .∈ [["Enhancer", "Silencer"]]
+    elseif strong_vs_silence
+        classes_we_want = df3.group_name_WT .∈ [["Strong enhancer", "Silencer"]]
     else
         classes_we_want = df3.group_name_WT .∈ [["Weak enhancer", "Strong enhancer",  "Silencer"]];
     end
    
+    # get the DNA sequences ####################
     _, d = reading_w_header(supp3_fasta);
-    
-    if two_class
-        return String.(group_name_WT_binary[classes_we_want]), d[classes_we_want];
+    ############################################
+
+    # setup the labels and sequences
+    labels = nothing; seqs = nothing;
+    if twoE_oneS
+        labels, seqs = String.(group_name_WT_binary[classes_we_want]), d[classes_we_want];
     else
-        return String.(df3.group_name_WT[classes_we_want]), d[classes_we_want];
+        labels, seqs = String.(df3.group_name_WT[classes_we_want]), d[classes_we_want];
     end
+
+    if reverse_complement
+        labels = [labels..., labels...] 
+        seqs = [seqs..., reverse_complement.(seqs)...];
+    end
+
+    return labels, seqs
 end
+
+
 
 
 function reading_w_chr_loc(filepath::String;

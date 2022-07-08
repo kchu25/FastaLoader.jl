@@ -1,5 +1,9 @@
 # h, d = FastaLoader.reading(fp; get_header=true, ryan_data=true);
 
+function reverse_complement(s::String)    
+    join(islowercase(s[si]) ? s[si] : DNA_complement[s[si]] for si = length(s):-1:1)
+end
+
 function get_count_map(v)
     return countmap(v)
 end
