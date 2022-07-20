@@ -53,11 +53,11 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
     L::Int
     acgt_freq::Vector{S}
     markov_bg_mat::Matrix{S}
-    raw_data::Vector{String}
+    raw_strs::Vector{String}
     data_matrix::Union{Array{S,3}, Array{S,2}}
     data_matrix_gpu::Union{CuArray{S,3}, CuArray{S,2}}
     data_matrix_bg::Union{Array{S,3}, Array{S,2}}
-    meta_data::Union{Nothing, dna_meta_data}
+    raw_data::Union{Nothing, dna_meta_data}
 
     # constructor for JASPAR datasets
     function FASTA_DNA_JASPAR{S}(filepath::String; max_entries=max_num_read_fasta) where {S <: Real}
