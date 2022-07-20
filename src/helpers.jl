@@ -53,6 +53,8 @@ function read_fasta(filepath::String;
     return [uppercase(i) for i in dna_reads]
 end
 
+
+
 function dna2dummy(dna_string::String, dummy::Dict; F=Float32)    
     v = Array{F,1}(undef, 4*length(dna_string));
     for (index, alphabet) in enumerate(dna_string)

@@ -9,7 +9,8 @@ export FASTA_DNA,
        get_train_fold_for_flux,
        fasta_reshape_for_flux!,
        fasta_reshape_to_orig!,
-       reading
+       reading,
+       FASTA_DNA_JASPAR
 
 
 include("constants.jl")
@@ -18,6 +19,5 @@ include("fasta.jl")
 include("fasta_assign.jl")
 include("fasta_w_splits.jl")
 
-# println("hi")
 
 end

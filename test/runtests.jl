@@ -42,8 +42,7 @@ using Test
         @test sum(sum(class_indicators[:,valid_set_ind], dims=1) .== 0) == 0
     end
 
-    two_class = true;
-    all_labels, all_dna_read = FastaLoader.read_supp3(fp3, fp4; two_class=two_class);
+    all_labels, all_dna_read = FastaLoader.read_supp3(fp3, fp4);
     shuffles_class_indices, valid_labels, class_indicators = FastaLoader.read_ryan_fasta(all_labels);
     mcs = FastaLoader.multiple_class_splits(
                 FastaLoader.train_test_split.(shuffles_class_indices; 
@@ -59,8 +58,9 @@ using Test
         @test sum(sum(class_indicators[:,valid_set_ind], dims=1) .== 0) == 0
     end            
     
-    two_class = false;
-    all_labels, all_dna_read = FastaLoader.read_supp3(fp3, fp4; two_class=two_class);
+    all_labels, all_dna_read = FastaLoader.read_supp3(fp3, fp4;  twoE_oneS=true, 
+                                                        strong_vs_silence=false,
+                                                        reverse_comp=true);
     shuffles_class_indices, valid_labels, class_indicators = FastaLoader.read_ryan_fasta(all_labels);
     mcs = FastaLoader.multiple_class_splits(
                 FastaLoader.train_test_split.(shuffles_class_indices; 
@@ -79,7 +79,7 @@ using Test
     # fp5 = "test/MA0599.1.sites"
     # dna_read = FastaLoader.read_fasta(fp5; max_entries=10000000);
     # data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat = FastaLoader.get_data_matrices(dna_read; FloatType=Float32);
-
+    # my_read = read_fasta_that_has_ground_truth(fp);
 
 end
 
