@@ -87,7 +87,7 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
             dna_reads, 
             data_matrix, 
             cu(data_matrix),
-            reshape(data_matrix_bg, 4*L, 1, N),
+            reshape(data_matrix_bg, 4*L, N),
             raw_data
            )        
     end
