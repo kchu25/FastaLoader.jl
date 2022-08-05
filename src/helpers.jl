@@ -128,7 +128,6 @@ function get_data_matrices(dna_read;
     acgt_freq_test, markov_mat_test = est_1st_order_markov_bg(shuffled_dna_read_test; F=FloatType);
     data_bg_prob_train = SeqShuffle.assign_bg_prob(shuffled_dna_read_train, markov_mat_train, acgt_freq_train);
     data_bg_prob_test = SeqShuffle.assign_bg_prob(shuffled_dna_read_test, markov_mat_test, acgt_freq_test);
-
    
     return data_matrix_train, 
            data_matrix_bg_train, 
