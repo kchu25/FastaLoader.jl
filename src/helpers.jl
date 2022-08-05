@@ -77,9 +77,7 @@ function data_2_dummy(dna_strings; F=Float32)
 
     how_many_strings = length(dna_strings);
     # @assert how_many_strings != 0 "There aren't DNA strings found in the input";
-    if how_many_strings == 0 
-        return nothing;
-    end
+    how_many_strings == 0  && return nothing;
     _len_ = length(dna_strings[1]); # length of each dna string in data    
     _S_ = Array{F, 2}(undef, (4*_len_, how_many_strings));
     for i = 1:how_many_strings
