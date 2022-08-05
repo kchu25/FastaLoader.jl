@@ -138,7 +138,9 @@ function get_data_matrices(dna_read;
            acgt_freq_test,
            markov_mat_test,
            length(dna_read_train),
-           length(dna_read_test)
+           length(dna_read_test),
+           train_set_inds,
+           test_set_inds
 end
 
 # println("!23")

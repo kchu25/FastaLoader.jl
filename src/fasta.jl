@@ -7,6 +7,7 @@ mutable struct FASTA_DNA{S <: Real}
     acgt_freq::Vector{S}
     markov_bg_mat::Matrix{S}
     raw_data::Vector{String}
+    raw_data_test::Vector{String}
     data_matrix::Union{Array{S,3}, Array{S,2}}
     data_matrix_gpu::Union{CuArray{S,3}, CuArray{S,2}}
     data_matrix_bg::Union{Array{S,3}, Array{S,2}}
@@ -38,7 +39,8 @@ mutable struct FASTA_DNA{S <: Real}
             dna_read = read_fasta(fasta_location; max_entries);
         end
         data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat,
-            data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, markov_bg_mat_test, N_train, N_test = 
+            data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, 
+                markov_bg_mat_test, N_train, N_test, train_set_inds, test_set_inds = 
                 get_data_matrices(dna_reads; k=k, 
                                   train_test_split_ratio=train_test_split_ratio, 
                                   shuffle=shuffle, 
@@ -52,7 +54,8 @@ mutable struct FASTA_DNA{S <: Real}
             L,
             acgt_freq,
             markov_bg_mat,
-            dna_read,
+            dna_read[train_set_inds],
+            dna_read[test_set_inds],
             data_matrix,
             cu(data_matrix),
             reshape(data_matrix_bg, 4*L, 1, N_train),
@@ -74,10 +77,12 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
     acgt_freq::Vector{S}
     markov_bg_mat::Matrix{S}
     raw_strs::Vector{String}
+    raw_strs_test::Vector{String}
     data_matrix::Union{Array{S,3}, Array{S,2}}
     data_matrix_gpu::Union{CuArray{S,3}, CuArray{S,2}}
     data_matrix_bg::Union{Array{S,3}, Array{S,2}}
     raw_data::Union{Nothing, dna_meta_data}
+    raw_data_test::Union{Nothing, dna_meta_data}
     acgt_freq_test::Union{Nothing, Vector{S}}
     markov_bg_mat_test::Union{Nothing, Matrix{S}}
     data_matrix_test::Union{Nothing, Array{S,3}, Array{S,2}}
@@ -107,13 +112,14 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
         dna_reads = uppercase.(dna_reads);
 
         data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat,
-            data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, markov_bg_mat_test, N_train, N_test = 
-            get_data_matrices(dna_reads; k=k, 
-                              train_test_split_ratio=train_test_split_ratio, 
-                              FloatType=S,
-                              shuffle=shuffle
-                              );
-        
+            data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, 
+                markov_bg_mat_test, N_train, N_test, train_set_inds, test_set_inds = 
+                get_data_matrices(dna_reads; k=k, 
+                                train_test_split_ratio=train_test_split_ratio, 
+                                FloatType=S,
+                                shuffle=shuffle
+                                );
+            
         L = Int(size(data_matrix,1)/4);
         data_matrix = reshape(data_matrix, 4*L, 1, N_train);
         data_matrix_test = reshape(data_matrix_test, 4*L, 1, N_test)
@@ -121,11 +127,13 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
             L, 
             acgt_freq, 
             markov_bg_mat, 
-            dna_reads, 
+            dna_reads[train_set_inds], 
+            dna_reads[test_set_inds],
             data_matrix, 
             cu(data_matrix),
             reshape(data_matrix_bg, 4*L, N_train),
-            raw_data,
+            raw_data[train_set_inds],
+            raw_data[test_set_inds],
             acgt_freq_test,
             markov_bg_mat_test,
             data_matrix_test,
