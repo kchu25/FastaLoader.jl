@@ -2,7 +2,7 @@ using FastaLoader
 using Test
 
 @testset "FastaLoader.jl" begin
-    fp = "test/MA0463.1.sites";
+    fp = "MA0463.1.sites";
     fp2 = "ryan.txt";
     fp3 = "supp3.txt"
     fp4 = "coor.fa"
