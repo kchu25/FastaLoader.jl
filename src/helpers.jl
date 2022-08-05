@@ -68,7 +68,7 @@ end
 get the set of dummy-vectors from a set of dna-strings
 the dummy-vectors are all of same length (for now)
 =#
-function data_2_dummy(dna_strings::Vector{String}; F=Float32)
+function data_2_dummy(dna_strings; F=Float32)
 
     dummy = Dict('A'=>Array{F}([1, 0, 0, 0]), 
                    'C'=>Array{F}([0, 1, 0, 0]),
@@ -76,7 +76,10 @@ function data_2_dummy(dna_strings::Vector{String}; F=Float32)
                    'T'=>Array{F}([0, 0, 0, 1]));
 
     how_many_strings = length(dna_strings);
-    @assert how_many_strings != 0 "There aren't DNA strings found in the input";
+    # @assert how_many_strings != 0 "There aren't DNA strings found in the input";
+    if how_many_strings == 0 
+        return nothing;
+    end
     _len_ = length(dna_strings[1]); # length of each dna string in data    
     _S_ = Array{F, 2}(undef, (4*_len_, how_many_strings));
     for i = 1:how_many_strings
@@ -85,16 +88,57 @@ function data_2_dummy(dna_strings::Vector{String}; F=Float32)
     return _S_
 end
 
-function get_data_matrices(dna_read; k=2, FloatType=dat_t)
-    shuffled_dna_read = seq_shuffle.(dna_read; k=k);
-    data_matrix = data_2_dummy(dna_read; F=FloatType);
-    data_matrix_bg = data_2_dummy(shuffled_dna_read; F=FloatType);
+function get_data_matrices(dna_read; 
+                           k=2, 
+                           FloatType=dat_t, 
+                           train_test_split_ratio=0.85,
+                           shuffle=true)
+    # set train_test_split_ratio = 1.0 if no test set is needed
+    len_dna_read = length(dna_read)
+    how_may_entries_in_test = Int(floor((1-train_test_split_ratio)*len_dna_read));
 
+    test_set_inds = nothing;
+    if shuffle 
+        test_set_inds = sample(1:len_dna_read, 
+                      how_may_entries_in_test, 
+                      replace=false)
+    else
+        test_set_inds = collect(len_dna_read-how_may_entries_in_test+1:len_dna_read)
+    end
+
+    train_set_inds = setdiff(1:len_dna_read, test_set_inds)
+
+    dna_read_train = @view dna_read[train_set_inds]
+    dna_read_test = @view dna_read[test_set_inds]    
+    
+    shuffled_dna_read_train = seq_shuffle.(dna_read_train; k=k);
+    data_matrix_train = data_2_dummy(dna_read_train; F=FloatType);
+    data_matrix_bg_train = data_2_dummy(shuffled_dna_read_train; F=FloatType);
+
+
+    shuffled_dna_read_test = seq_shuffle.(dna_read_test; k=k);
+    data_matrix_test = data_2_dummy(dna_read_test; F=FloatType);
+    data_matrix_bg_test = data_2_dummy(shuffled_dna_read_test; F=FloatType);
+    
     # estimate the Markov background (order 1)
-    acgt_freq, markov_mat = est_1st_order_markov_bg(shuffled_dna_read; F=FloatType);
-    data_bg_prob = SeqShuffle.assign_bg_prob(shuffled_dna_read, markov_mat, acgt_freq);
+    acgt_freq_train, markov_mat_train = est_1st_order_markov_bg(shuffled_dna_read_train; F=FloatType);
+    acgt_freq_test, markov_mat_test = est_1st_order_markov_bg(shuffled_dna_read_test; F=FloatType);
+    data_bg_prob_train = SeqShuffle.assign_bg_prob(shuffled_dna_read_train, markov_mat_train, acgt_freq_train);
+    data_bg_prob_test = SeqShuffle.assign_bg_prob(shuffled_dna_read_test, markov_mat_test, acgt_freq_test);
 
-    return data_matrix, data_matrix_bg, data_bg_prob, acgt_freq, markov_mat
+   
+    return data_matrix_train, 
+           data_matrix_bg_train, 
+           data_bg_prob_train, 
+           acgt_freq_train, 
+           markov_mat_train, 
+           data_matrix_test,
+           data_matrix_bg_test,
+           data_bg_prob_test,
+           acgt_freq_test,
+           markov_mat_test,
+           length(dna_read_train),
+           length(dna_read_test)
 end
 
 # println("!23")
