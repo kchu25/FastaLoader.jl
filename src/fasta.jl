@@ -21,7 +21,8 @@ mutable struct FASTA_DNA{S <: Real}
                         max_entries=max_num_read_fasta,
                         ryan_w_labels=false,
                         k=2, # kmer frequency in the test set 
-                        train_test_split_ratio=0.85
+                        train_test_split_ratio=0.85,
+                        shuffle=true
                         ) where {S <: Real}       
         dna_read = nothing; labels = nothing;
         if ryan_w_labels
@@ -37,7 +38,10 @@ mutable struct FASTA_DNA{S <: Real}
         end
         data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat,
             data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, markov_bg_mat_test, N_train, N_test = 
-                get_data_matrices(dna_reads; k=k, train_test_split_ratio=train_test_split_ratio, FloatType=S);
+                get_data_matrices(dna_reads; k=k, 
+                                  train_test_split_ratio=train_test_split_ratio, 
+                                  shuffle=shuffle, 
+                                  FloatType=S);
         # data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat = get_data_matrices(dna_read; FloatType=S);
         L = Int(size(data_matrix,1)/4);
         data_matrix = reshape(data_matrix, 4*L, 1, N_train);
@@ -81,7 +85,9 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
     function FASTA_DNA_JASPAR{S}(filepath::String; 
                                  max_entries=max_num_read_fasta,
                                  k=2, # kmer frequency in the test set
-                                 train_test_split_ratio=0.85) where {S <: Real}
+                                 train_test_split_ratio=0.85,
+                                 shuffle=true
+                                 ) where {S <: Real}
         dna_reads = reading(filepath; max_entries);   
         raw_data = dna_meta_data()
         num_ground_truth = 0;
@@ -99,7 +105,11 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
 
         data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat,
             data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, markov_bg_mat_test, N_train, N_test = 
-            get_data_matrices(dna_reads; k=k, train_test_split_ratio=train_test_split_ratio, FloatType=S);
+            get_data_matrices(dna_reads; k=k, 
+                              train_test_split_ratio=train_test_split_ratio, 
+                              FloatType=S,
+                              shuffle=shuffle
+                              );
         
         L = Int(size(data_matrix,1)/4);
         data_matrix = reshape(data_matrix, 4*L, 1, N_train);
