@@ -12,10 +12,10 @@ mutable struct FASTA_DNA{S <: Real}
     data_matrix_bg::Union{Array{S,3}, Array{S,2}}
     labels::Union{Nothing, Vector{String}, Vector{Int}}
     meta_data::Union{Nothing, dna_meta_data}
-    acgt_freq_test::Vector{S}
-    markov_bg_mat_test::Matrix{S}
-    data_matrix_test::Union{Array{S,3}, Array{S,2}}
-    data_matrix_bg_test::Union{Array{S,3}, Array{S,2}}
+    acgt_freq_test::Union{Nothing, Vector{S}}
+    markov_bg_mat_test::Union{Nothing, Matrix{S}}
+    data_matrix_test::Union{Nothing, Array{S,3}, Array{S,2}}
+    data_matrix_bg_test::Union{Nothing, Array{S,3}, Array{S,2}}
 
     function FASTA_DNA{S}(fasta_location::String; 
                         max_entries=max_num_read_fasta,
@@ -76,10 +76,10 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
     data_matrix_gpu::Union{CuArray{S,3}, CuArray{S,2}}
     data_matrix_bg::Union{Array{S,3}, Array{S,2}}
     raw_data::Union{Nothing, dna_meta_data}
-    acgt_freq_test::Vector{S}
-    markov_bg_mat_test::Matrix{S}
-    data_matrix_test::Union{Array{S,3}, Array{S,2}}
-    data_matrix_bg_test::Union{Array{S,3}, Array{S,2}}
+    acgt_freq_test::Union{Nothing, Vector{S}}
+    markov_bg_mat_test::Union{Nothing, Matrix{S}}
+    data_matrix_test::Union{Nothing, Array{S,3}, Array{S,2}}
+    data_matrix_bg_test::Union{Nothing, Array{S,3}, Array{S,2}}
     
     # constructor for JASPAR datasets
     function FASTA_DNA_JASPAR{S}(filepath::String; 
