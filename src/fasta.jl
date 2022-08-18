@@ -9,7 +9,9 @@ mutable struct FASTA_DNA{S <: Real}
     raw_data::Vector{String}
     raw_data_test::Vector{String}
     data_matrix::Union{Array{S,3}, Array{S,2}}
+    data_matrix_gpu::Union{CuArray{S,3}, CuArray{S,2}}
     data_matrix_bg::Union{Array{S,3}, Array{S,2}}
+    data_matrix_bg_gpu::Union{CuArray{S,3}, CuArray{S,2}}
     labels::Union{Nothing, Vector{String}, Vector{Int}}
     meta_data::Union{Nothing, dna_meta_data}
     acgt_freq_test::Union{Nothing, Vector{S}}
@@ -48,6 +50,7 @@ mutable struct FASTA_DNA{S <: Real}
         L = Int(size(data_matrix,1)/4);
         data_matrix = reshape(data_matrix, 4*L, 1, N_train);
         data_matrix_test = reshape(data_matrix_test, 4*L, 1, N_test)
+        data_matrix_bg = reshape(data_matrix_bg, 4*L, 1, N_train)
         new(        
             N_train,
             L,
@@ -56,7 +59,9 @@ mutable struct FASTA_DNA{S <: Real}
             dna_read[train_set_inds],
             dna_read[test_set_inds],
             data_matrix,
-            reshape(data_matrix_bg, 4*L, 1, N_train),
+            cu(data_matrix),
+            data_matrix_bg,
+            cu(data_matrix_bg),
             labels,
             nothing,
             acgt_freq_test,
@@ -77,7 +82,9 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
     raw_strs::Vector{String}
     raw_strs_test::Vector{String}
     data_matrix::Union{Array{S,3}, Array{S,2}}
+    data_matrix::Union{CuArray{S,3}, CuArray{S,2}}
     data_matrix_bg::Union{Array{S,3}, Array{S,2}}
+    data_matrix_bg::Union{CuArray{S,3}, CuArray{S,2}}
     raw_data::Union{Nothing, dna_meta_data}
     raw_data_test::Union{Nothing, dna_meta_data}
     acgt_freq_test::Union{Nothing, Vector{S}}
@@ -120,6 +127,7 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
         L = Int(size(data_matrix,1)/4);
         data_matrix = reshape(data_matrix, 4*L, 1, N_train);
         data_matrix_test = reshape(data_matrix_test, 4*L, 1, N_test)
+        data_matrix_bg = reshape(data_matrix_bg, 4*L, N_train)
         new(N_train, 
             L, 
             acgt_freq, 
@@ -127,7 +135,9 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
             dna_reads[train_set_inds], 
             dna_reads[test_set_inds],
             data_matrix, 
-            reshape(data_matrix_bg, 4*L, N_train),
+            cu(data_matrix), 
+            data_matrix_bg,
+            cu(data_matrix_bg),
             raw_data[train_set_inds],
             raw_data[test_set_inds],
             acgt_freq_test,
