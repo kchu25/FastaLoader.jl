@@ -82,9 +82,9 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
     raw_strs::Vector{String}
     raw_strs_test::Vector{String}
     data_matrix::Union{Array{S,3}, Array{S,2}}
-    data_matrix::Union{CuArray{S,3}, CuArray{S,2}}
+    data_matrix_gpu::Union{CuArray{S,3}, CuArray{S,2}}
     data_matrix_bg::Union{Array{S,3}, Array{S,2}}
-    data_matrix_bg::Union{CuArray{S,3}, CuArray{S,2}}
+    data_matrix_bg_gpu::Union{CuArray{S,3}, CuArray{S,2}}
     raw_data::Union{Nothing, dna_meta_data}
     raw_data_test::Union{Nothing, dna_meta_data}
     acgt_freq_test::Union{Nothing, Vector{S}}
