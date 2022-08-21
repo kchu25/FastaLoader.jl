@@ -42,7 +42,7 @@ mutable struct FASTA_DNA{S <: Real}
         data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat,
             data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, 
                 markov_bg_mat_test, N_train, N_test, train_set_inds, test_set_inds = 
-                get_data_matrices(dna_reads; k=k, 
+                get_data_matrices(dna_read; k=k, 
                                   train_test_split_ratio=train_test_split_ratio, 
                                   shuffle=shuffle, 
                                   FloatType=S);
