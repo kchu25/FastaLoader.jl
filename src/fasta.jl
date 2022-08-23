@@ -23,7 +23,7 @@ mutable struct FASTA_DNA{S <: Real}
     function FASTA_DNA{S}(fasta_location::String; 
                         max_entries=max_num_read_fasta,
                         ryan_w_labels=false,
-                        k=2, # kmer frequency in the test set 
+                        k=1, # kmer frequency in the test set 
                         train_test_split_ratio=0.85,
                         shuffle=true
                         ) where {S <: Real}       
@@ -96,7 +96,7 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
     # constructor for JASPAR datasets
     function FASTA_DNA_JASPAR{S}(filepath::String; 
                                  max_entries=max_num_read_fasta,
-                                 k=2, # kmer frequency in the test set
+                                 k=1, # kmer frequency in the test set
                                  train_test_split_ratio=0.85,
                                  shuffle=true
                                  ) where {S <: Real}
