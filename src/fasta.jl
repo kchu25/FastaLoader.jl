@@ -23,8 +23,8 @@ mutable struct FASTA_DNA{S <: Real}
     function FASTA_DNA{S}(fasta_location::String; 
                         max_entries=max_num_read_fasta,
                         ryan_w_labels=false,
-                        k=1, # kmer frequency in the test set 
-                        train_test_split_ratio=0.85,
+                        k_train=1, k_test=2, # kmer frequency in the test set 
+                        train_test_split_ratio=0.9,
                         shuffle=true
                         ) where {S <: Real}       
         dna_read = nothing; labels = nothing;
@@ -42,7 +42,7 @@ mutable struct FASTA_DNA{S <: Real}
         data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat,
             data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, 
                 markov_bg_mat_test, N_train, N_test, train_set_inds, test_set_inds = 
-                get_data_matrices(dna_read; k=k, 
+                get_data_matrices(dna_read; k_train=k_train, k_test=k_test, 
                                   train_test_split_ratio=train_test_split_ratio, 
                                   shuffle=shuffle, 
                                   FloatType=S);
@@ -73,7 +73,6 @@ mutable struct FASTA_DNA{S <: Real}
     end
 end
 
-
 mutable struct FASTA_DNA_JASPAR{S <: Real}
     N::Int
     L::Int
@@ -96,8 +95,8 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
     # constructor for JASPAR datasets
     function FASTA_DNA_JASPAR{S}(filepath::String; 
                                  max_entries=max_num_read_fasta,
-                                 k=1, # kmer frequency in the test set
-                                 train_test_split_ratio=0.85,
+                                 k_train=1, k_test=2, # kmer frequency in the test set
+                                 train_test_split_ratio=0.9,
                                  shuffle=true
                                  ) where {S <: Real}
         dna_reads = reading(filepath; max_entries);   
@@ -118,7 +117,7 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
         data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat,
             data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, 
                 markov_bg_mat_test, N_train, N_test, train_set_inds, test_set_inds = 
-                get_data_matrices(dna_reads; k=k, 
+                get_data_matrices(dna_reads; k_train=k_train, k_test=k_test,
                                 train_test_split_ratio=train_test_split_ratio, 
                                 FloatType=S,
                                 shuffle=shuffle
@@ -148,6 +147,10 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
            )
     end
 end
+
+
+
+
 
 
 get_N(d::FASTA_DNA) = d.N_train;

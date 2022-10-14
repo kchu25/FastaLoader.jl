@@ -102,7 +102,7 @@ function get_train_test_inds(dna_read, train_test_split_ratio, shuffle)
 end
 
 function get_data_matrices(dna_read; 
-                           k=2, 
+                           k_train=1, k_test=2, 
                            FloatType=dat_t, 
                            train_test_split_ratio=0.85,
                            shuffle=true)
@@ -112,12 +112,12 @@ function get_data_matrices(dna_read;
     dna_read_train = @view dna_read[train_set_inds]
     dna_read_test = @view dna_read[test_set_inds]    
     
-    shuffled_dna_read_train = seq_shuffle.(dna_read_train; k=k);
+    shuffled_dna_read_train = seq_shuffle.(dna_read_train; k=k_train);
     data_matrix_train = data_2_dummy(dna_read_train; F=FloatType);
     data_matrix_bg_train = data_2_dummy(shuffled_dna_read_train; F=FloatType);
 
 
-    shuffled_dna_read_test = seq_shuffle.(dna_read_test; k=k);
+    shuffled_dna_read_test = seq_shuffle.(dna_read_test; k=k_test);
     data_matrix_test = data_2_dummy(dna_read_test; F=FloatType);
     data_matrix_bg_test = data_2_dummy(shuffled_dna_read_test; F=FloatType);
     
