@@ -8,6 +8,32 @@ function get_count_map(v)
     return countmap(v)
 end
 
+"""
+Read the strings from the datasets provided by 
+https://github.com/ML-Bioinfo-CEITEC/genomic_benchmarks
+and processed by 
+https://github.com/kchu25/genomic_benchmark_datasets
+
+Assume all dna strings are of the same length and contains no masked strings
+"""
+function reading_for_DNA_classification(filepath::String)
+    reads = read(filepath, String);
+    splits = split(reads, '>');
+    dna_reads = Vector{String}();
+    labels = Vector{Int}();
+    for i in splits
+        if !isempty(i)
+            splits_i = split(i, "\n");
+            if !occursin("N", splits_i[2]) && !occursin("n", splits_i[2])
+                push!(labels, parse(Int, splits_i[1]));
+                push!(dna_reads, splits_i[2]);
+            end
+        end
+    end
+    return labels, dna_reads
+end
+
+
 function reading(filepath::String;
                  max_entries=max_num_read_fasta,
                  get_header=false,

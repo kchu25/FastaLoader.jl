@@ -1,6 +1,40 @@
 const dna_meta_data = Vector{NamedTuple{(:str, :motif_where, :mode), 
                             Tuple{String, UnitRange{Int64}, Int64}}}
 
+
+mutable struct FASTA_DNA_for_classifications{S <: Real}
+    N::Int                                              # number of dna strings in the training set
+    L::Int                                              # length of the dna strings in the training set
+    N_test::Int                                         # number of dna strings in the test set
+    L_test::Int                                         # length of the dna strings in the test set
+    raw_data_train::Vector{String}                      # raw data of the training set
+    raw_data_test::Vector{String}                       # raw data of the test set
+    data_matrix::Union{Array{S,3}, Array{S,2}}          # data array (one-hot, cpu) of the training set
+    data_matrix_test::Union{Array{S,3}, Array{S,2}}     # data array (one-hot, cpu) of the training set
+    labels::Vector{Int}                                 # training set string labels
+    labels_test::Vector{Int}                            # test set string labels
+
+    function FASTA_DNA_for_classifications{S}(fasta_train::String, fasta_test::String) where {S <: Real}
+        labels, raw_data_train = reading_for_DNA_classification(fasta_train)
+        labels_test, raw_data_test = reading_for_DNA_classification(fasta_test)
+        data_matrix = data_2_dummy(raw_data_train; F=S);
+        data_matrix_test = data_2_dummy(raw_data_train; F=S);
+        new(
+            length(labels),
+            size(data_matrix, 2),
+            length(labels_test),
+            size(data_matrix_test, 2),
+            raw_data_train, 
+            raw_data_test, 
+            data_matrix,
+            data_matrix_test,
+            labels,
+            labels_test
+        )
+    end
+end
+                            
+                            
 mutable struct FASTA_DNA{S <: Real}
     N::Int
     L::Int
@@ -147,7 +181,6 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
            )
     end
 end
-
 
 
 
