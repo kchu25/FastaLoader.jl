@@ -7,27 +7,33 @@ mutable struct FASTA_DNA_for_classifications{S <: Real}
     L::Int                                              # length of the dna strings in the training set
     N_test::Int                                         # number of dna strings in the test set
     L_test::Int                                         # length of the dna strings in the test set
+    num_classes::Int                                    # number of classes
     raw_data_train::Vector{String}                      # raw data of the training set
     raw_data_test::Vector{String}                       # raw data of the test set
     data_matrix::Union{Array{S,3}, Array{S,2}}          # data array (one-hot, cpu) of the training set
     data_matrix_test::Union{Array{S,3}, Array{S,2}}     # data array (one-hot, cpu) of the training set
-    labels::Vector{Int}                                 # training set string labels
-    labels_test::Vector{Int}                            # test set string labels
+    labels::BitMatrix                                   # training set string labels
+    labels_test::BitMatrix                              # test set string labels
+
+    # TODO: labels to one hot encoding
 
     function FASTA_DNA_for_classifications{S}(fasta_train::String, fasta_test::String) where {S <: Real}
         labels, raw_data_train = reading_for_DNA_classification(fasta_train)
-        labels_test, raw_data_test = reading_for_DNA_classification(fasta_test)
+        labels_test, raw_data_test = reading_for_DNA_classification(fasta_test)    
         data_matrix = data_2_dummy(raw_data_train; F=S);
-        data_matrix_test = data_2_dummy(raw_data_train; F=S);
+        data_matrix_test = data_2_dummy(raw_data_test; F=S);
+        N = size(labels, 2); L = length(raw_data_train[1]); 
+        N_test = size(labels_test, 2); L_test = length(raw_data_test[1]);
         new(
-            length(labels),
-            size(data_matrix, 2),
-            length(labels_test),
-            size(data_matrix_test, 2),
+            N,
+            L,
+            N_test,
+            L_test,
+            length(unique(labels)),
             raw_data_train, 
             raw_data_test, 
-            data_matrix,
-            data_matrix_test,
+            reshape(data_matrix, (4*L, 1, N)),
+            reshape(data_matrix_test, (4*L_test, 1, N_test)),
             labels,
             labels_test
         )

@@ -30,6 +30,10 @@ function reading_for_DNA_classification(filepath::String)
             end
         end
     end
+
+    uniq_labels = unique(labels)
+    labels = reduce(hcat, [uniq_labels .== v for v in labels]); # bitarrays for class indicates
+
     return labels, dna_reads
 end
 
