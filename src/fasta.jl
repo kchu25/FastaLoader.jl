@@ -1,7 +1,6 @@
 const dna_meta_data = Vector{NamedTuple{(:str, :motif_where, :mode), 
                             Tuple{String, UnitRange{Int64}, Int64}}}
 
-
 mutable struct FASTA_DNA_for_classifications{S <: Real}
     N::Int                                              # number of dna strings in the training set
     L::Int                                              # length of the dna strings in the training set
@@ -39,9 +38,7 @@ mutable struct FASTA_DNA_for_classifications{S <: Real}
         )
     end
 end
-                         
-# TODO: remove ryan's label and related code
-                            
+
 mutable struct FASTA_DNA{S <: Real}
     N::Int
     L::Int
@@ -63,23 +60,12 @@ mutable struct FASTA_DNA{S <: Real}
 
     function FASTA_DNA{S}(fasta_location::String; 
                         max_entries=max_num_read_fasta,
-                        ryan_w_labels=false,
                         k_train=1, k_test=2, # kmer frequency in the test set 
                         train_test_split_ratio=0.9,
                         shuffle=true
                         ) where {S <: Real}       
         dna_read = nothing; labels = nothing;
-        if ryan_w_labels
-            all_labels, all_dna_read = reading(fasta_location; get_header=true, ryan_data=true);
-            dcount = get_count_map(all_labels); # count the number data point asscociated with each label
-            ks = [k for k in keys(dcount)]; vals = [v for v in values(dcount)];
-            valid_labels = ks[vals .> label_count_thresh]; # labels that got more data to be considered valid
-            indicators = map(x-> x ∈ valid_labels ? true : false, all_labels);
-            labels = all_labels[indicators];
-            dna_read = [uppercase(i) for i in all_dna_read[indicators]];
-        else
-            dna_read = read_fasta(fasta_location; max_entries);
-        end
+        dna_read = read_fasta(fasta_location; max_entries);
         data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat,
             data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, 
                 markov_bg_mat_test, N_train, N_test, train_set_inds, test_set_inds = 
@@ -87,7 +73,6 @@ mutable struct FASTA_DNA{S <: Real}
                                   train_test_split_ratio=train_test_split_ratio, 
                                   shuffle=shuffle, 
                                   FloatType=S);
-        # data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat = get_data_matrices(dna_read; FloatType=S);
         L = Int(size(data_matrix,1)/4);
         data_matrix = reshape(data_matrix, 4*L, 1, N_train);
         data_matrix_test = reshape(data_matrix_test, 4*L, 1, N_test)
@@ -163,7 +148,6 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
                                 FloatType=S,
                                 shuffle=shuffle
                                 );
-            
         L = Int(size(data_matrix,1)/4);
         data_matrix = reshape(data_matrix, 4*L, 1, N_train);
         data_matrix_test = reshape(data_matrix_test, 4*L, 1, N_test)

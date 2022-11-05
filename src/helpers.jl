@@ -36,39 +36,22 @@ function reading_for_DNA_classification(filepath::String)
 end
 
 function reading(filepath::String;
-                 max_entries=max_num_read_fasta,
-                 get_header=false,
-                 ryan_data=false)
-    # read the file
+                 max_entries=max_num_read_fasta)
+    # read the file; process the fasta file to get the DNA part; # rid of sequences that contains "n"
     reads = read(filepath, String);
-    # process the fasta file to get the DNA part
-    # rid of sequences that contains "n"
     dna_reads = Vector{String}();
-    header_labels = Vector{String}();
     for i in split(reads, '>')
         if !isempty(i)
             splits = split(i, "\n");
-            header = splits[1];
             this_read = join(splits[2:end]);        
-            if !occursin("N", this_read) && !occursin("n", this_read)
-                push!(dna_reads, this_read);
-                ryan_data && push!(header_labels, split(header,"_")[2])
-            end
+            !occursin("N", this_read) && !occursin("n", this_read) && (push!(dna_reads, this_read);)            
         end
     end    
-    # dna_reads = [join(split(i, "\n")[2:end]) for i in split(reads, '>') if !isempty(i) && !occursin("N", i)]; 
-    dna_reads = length(dna_reads) > max_entries ? dna_reads[1:max_entries] : dna_reads;
-    
+    dna_reads = length(dna_reads) > max_entries ? dna_reads[1:max_entries] : dna_reads;    
     # rid of all dna sequences that's not the same length as sequence 1
     # o/w markov mat assignment may report error
     dna_reads = [s for s in dna_reads if length(s) == length(dna_reads[1])];
-
-    if get_header && ryan_data
-        @assert length(dna_reads) == length(header_labels)
-        return header_labels, dna_reads
-    else
-        return dna_reads
-    end
+    return dna_reads
 end
 
 function read_fasta(filepath::String; 
@@ -76,11 +59,8 @@ function read_fasta(filepath::String;
                     )::Vector{String}
     #= read a fasta file =#
     dna_reads = reading(filepath; max_entries);   
-    # convert all DNA seqeunce to uppercase
     return [uppercase(i) for i in dna_reads]
 end
-
-
 
 function dna2dummy(dna_string::String, dummy::Dict; F=Float32)    
     v = Array{F,1}(undef, 4*length(dna_string));
@@ -103,7 +83,7 @@ function data_2_dummy(dna_strings; F=Float32)
                    'T'=>Array{F}([0, 0, 0, 1]));
 
     how_many_strings = length(dna_strings);
-    # @assert how_many_strings != 0 "There aren't DNA strings found in the input";
+    @assert how_many_strings != 0 "There aren't DNA strings found in the input";
     how_many_strings == 0  && return nothing;
     _len_ = length(dna_strings[1]); # length of each dna string in data    
     _S_ = Array{F, 2}(undef, (4*_len_, how_many_strings));
@@ -142,7 +122,6 @@ function get_data_matrices(dna_read;
     shuffled_dna_read_train = seq_shuffle.(dna_read_train; k=k_train);
     data_matrix_train = data_2_dummy(dna_read_train; F=FloatType);
     data_matrix_bg_train = data_2_dummy(shuffled_dna_read_train; F=FloatType);
-
 
     shuffled_dna_read_test = seq_shuffle.(dna_read_test; k=k_test);
     data_matrix_test = data_2_dummy(dna_read_test; F=FloatType);
