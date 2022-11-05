@@ -39,7 +39,8 @@ mutable struct FASTA_DNA_for_classifications{S <: Real}
         )
     end
 end
-                            
+                         
+# TODO: remove ryan's label and related code
                             
 mutable struct FASTA_DNA{S <: Real}
     N::Int
@@ -187,10 +188,6 @@ mutable struct FASTA_DNA_JASPAR{S <: Real}
            )
     end
 end
-
-
-
-
 
 get_N(d::FASTA_DNA) = d.N_train;
 get_L(d::FASTA_DNA) = d.L;

@@ -7,5 +7,4 @@ const int_t = Int32;            # integer type
    for classification 
 =#
 const label_count_thresh = 250; 
-
 const DNA_complement = Dict('A'=>'T','C'=>'G','G'=>'C','T'=>'A');        

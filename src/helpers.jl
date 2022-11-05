@@ -1,5 +1,3 @@
-# h, d = FastaLoader.reading(fp; get_header=true, ryan_data=true);
-
 function reverse_complement(s::String)    
     join(islowercase(s[si]) ? s[si] : DNA_complement[s[si]] for si = length(s):-1:1)
 end
@@ -36,7 +34,6 @@ function reading_for_DNA_classification(filepath::String)
 
     return labels, dna_reads
 end
-
 
 function reading(filepath::String;
                  max_entries=max_num_read_fasta,
@@ -172,5 +169,3 @@ function get_data_matrices(dna_read;
            train_set_inds,
            test_set_inds
 end
-
-# println("!23")

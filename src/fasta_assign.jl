@@ -60,9 +60,6 @@ function read_supp3(supp3::String,
     return labels, seqs
 end
 
-
-
-
 function reading_w_chr_loc(filepath::String;
                  max_entries=max_num_read_fasta,
                  get_header=false,
