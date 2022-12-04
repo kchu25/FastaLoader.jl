@@ -10,4 +10,20 @@ This is a package that provides subroutines that loads the DNA sequences in the 
 
 # Usage
 
-Coming soon
+Coming Soon
+
+<!-- 
+## Loading fasta file for unsupervised learning tasks
+
+Let's use JASPAR dataset [MA0463.1](https://jaspar.genereg.net/matrix/MA0463.1/) as an example; the fasta file that we can direcly download is [MA0463.1.sites](https://jaspar.genereg.net/download/data/2022/sites/MA0463.1.sites).
+
+Once downloaded, you can load the this Fasta file by simply calling 
+```
+using FastaLoader
+
+ma0463_1 = FASTA_DNA{Float32}(<path to MA0463.1.sites>)
+``` -->
+
+
+
+

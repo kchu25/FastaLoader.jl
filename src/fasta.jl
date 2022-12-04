@@ -1,6 +1,49 @@
 const dna_meta_data = Vector{NamedTuple{(:str, :motif_where, :mode), 
                             Tuple{String, UnitRange{Int64}, Int64}}}
 
+
+mutable struct FASTA_DNA_for_regressions{S <: Real}
+    N::Int                                              # number of dna strings in the training set
+    L::Int                                              # length of the dna strings in the training set
+    N_test::Int                                         # number of dna strings in the test set
+    L_test::Int                                         # length of the dna strings in the test set
+    raw_data_train::Vector{String}                      # raw data of the training set
+    raw_data_test::Vector{String}                       # raw data of the test set
+    data_matrix::Union{Array{S,3}, Array{S,2}}          # data array (one-hot, cpu) of the training set
+    data_matrix_test::Union{Array{S,3}, Array{S,2}}     # data array (one-hot, cpu) of the training set
+    labels::Vector{S}                                   # training set string labels
+    labels_test::Vector{S}                              # test set string labels
+
+    function FASTA_DNA_for_regressions{S}(fasta::String; 
+            train_test_ratio=0.8) where {S <: Real}
+
+        # TODO: do cross-validation for the test set later
+        n_train, n_test, labels_train, seqs_train, labels_test, seqs_test = 
+            read_and_permute(fasta; 
+                train_test_ratio=train_test_ratio, 
+                parse_float_type=S)
+
+        data_matrix = data_2_dummy(seqs_train; F=S);
+        data_matrix_test = data_2_dummy(seqs_test; F=S);
+
+        L = length(seqs_train[1]); 
+        L_test = length(seqs_test[1]);
+
+        new(
+            n_train,
+            L,
+            n_test,
+            L_test,
+            seqs_train, 
+            seqs_test, 
+            reshape(data_matrix, (4*L, 1, n_train)),
+            reshape(data_matrix_test, (4*L_test, 1, n_test)),
+            labels_train,
+            labels_test
+        )
+    end
+end
+
 mutable struct FASTA_DNA_for_classifications{S <: Real}
     N::Int                                              # number of dna strings in the training set
     L::Int                                              # length of the dna strings in the training set

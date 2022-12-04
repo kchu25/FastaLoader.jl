@@ -6,6 +6,46 @@ function get_count_map(v)
     return countmap(v)
 end
 
+
+"""
+Assume all dna strings are of the same length and contains no masked strings
+"""
+function reading_for_DNA_regression(filepath::String; parse_float_type=Float32)
+    reads = read(filepath, String);
+    splits = split(reads, '>');
+    dna_reads = Vector{String}();
+    labels = Vector{parse_float_type}();
+    for i in splits
+        if !isempty(i)
+            splits_i = split(i, "\n");
+            if !occursin("N", splits_i[2]) && !occursin("n", splits_i[2])
+                push!(labels, parse(parse_float_type, splits_i[1]));
+                push!(dna_reads, splits_i[2]);
+            end
+        end
+    end
+    return labels, dna_reads
+end
+
+function permute_dataset(labels, seqs; train_test_ratio=0.8)
+    shuffled_indices = randperm(labels |> length)
+    n_rows = length(shuffled_indices);
+    n_train = round(Int, n_rows*train_test_ratio)
+    n_test = n_rows - n_train;    
+    labels_train = @view labels[shuffled_indices][1:n_train]
+    seqs_train   = @view seqs[shuffled_indices][1:n_train]
+    labels_test  = @view labels[shuffled_indices][n_train+1:end]
+    seqs_test    = @view seqs[shuffled_indices][n_train+1:end]
+    return n_train, n_test, labels_train, seqs_train, labels_test, seqs_test
+end
+
+function read_and_permute(filepath::String; train_test_ratio=0.8, parse_float_type=Float32)
+    labels, seqs = reading_for_DNA_regression(filepath; parse_float_type=parse_float_type)
+    return permute_dataset(labels, seqs; train_test_ratio=train_test_ratio)
+end
+
+
+
 """
 Read the strings from the datasets provided by 
 https://github.com/ML-Bioinfo-CEITEC/genomic_benchmarks

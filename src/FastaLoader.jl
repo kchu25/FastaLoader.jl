@@ -3,6 +3,7 @@ module FastaLoader
 using SeqShuffle, CUDA, StatsBase, Random, DataFrames, CSV
 
 export FASTA_DNA, 
+       FASTA_DNA_for_regressions,
        FASTA_DNA_for_classifications, 
        get_test_set_for_flux,
        get_train_fold_for_flux,
