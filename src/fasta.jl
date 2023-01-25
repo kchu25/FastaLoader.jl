@@ -2,6 +2,17 @@ const dna_meta_data = Vector{NamedTuple{(:str, :motif_where, :mode),
                             Tuple{String, UnitRange{Int64}, Int64}}}
 
 
+mutable struct FASTA_with_BigWig{S <: Real}
+    N::Int                                              # number of dna strings in the training set
+    L::Int                                              # length of the dna strings in the training set
+    N_test::Int                                         # number of dna strings in the test set
+    L_test::Int                                         # length of the dna strings in the test set
+    raw_data_train::Vector{String}                      # raw data of the training set
+    raw_data_test::Vector{String}                       # raw data of the test set
+
+end
+
+
 mutable struct FASTA_DNA_for_regressions{S <: Real}
     N::Int                                              # number of dna strings in the training set
     L::Int                                              # length of the dna strings in the training set
@@ -90,9 +101,9 @@ mutable struct FASTA_DNA{S <: Real}
     raw_data::Vector{String}
     raw_data_test::Vector{String}
     data_matrix::Union{Array{S,3}, Array{S,2}}
-    data_matrix_gpu::Union{CuArray{S,3}, CuArray{S,2}}
+    data_matrix_gpu::Union{CuArray{S,3}, CuArray{S,2}, Nothing}
     data_matrix_bg::Union{Array{S,3}, Array{S,2}}
-    data_matrix_bg_gpu::Union{CuArray{S,3}, CuArray{S,2}}
+    data_matrix_bg_gpu::Union{CuArray{S,3}, CuArray{S,2}, Nothing}
     labels::Union{Nothing, Vector{String}, Vector{Int}}
     meta_data::Union{Nothing, dna_meta_data}
     acgt_freq_test::Union{Nothing, Vector{S}}
@@ -128,9 +139,9 @@ mutable struct FASTA_DNA{S <: Real}
             dna_read[train_set_inds],
             dna_read[test_set_inds],
             data_matrix,
-            cu(data_matrix),
+            nothing,
             data_matrix_bg,
-            cu(data_matrix_bg),
+            nothing,
             labels,
             nothing,
             acgt_freq_test,
