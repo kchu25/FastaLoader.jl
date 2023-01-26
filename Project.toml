@@ -16,6 +16,7 @@ SeqShuffle = "5ea955a8-74dc-49b5-be65-6ee01fc504f7"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
+BigWig = "0.1"
 CSV = "0.10.7"
 CUDA = "3.12.0"
 DataFrames = "1.4.2"
