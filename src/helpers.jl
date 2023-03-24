@@ -1,10 +1,9 @@
-function reverse_complement(s::String)    
+reverse_complement(s::String) = 
     join(islowercase(s[si]) ? s[si] : DNA_complement[s[si]] for si = length(s):-1:1)
-end
 
-function get_count_map(v)
-    return countmap(v)
-end
+
+get_count_map(v) = countmap(v)
+
 
 
 """
@@ -134,18 +133,68 @@ function data_2_dummy(dna_strings; F=Float32)
 end
 
 function get_train_test_inds(dna_read, train_test_split_ratio, shuffle)
+    # println(shuffle)
     len_dna_read = length(dna_read)
     how_may_entries_in_test = Int(floor((1-train_test_split_ratio)*len_dna_read));
     test_set_inds = nothing;
+
+    shuffled_inds = randperm(len_dna_read)
+    # inds was 1:len_dna_read
     if shuffle 
-        test_set_inds = sample(1:len_dna_read, 
+        test_set_inds = sample(shuffled_inds, 
                       how_may_entries_in_test, 
                       replace=false)
     else
         test_set_inds = collect(len_dna_read-how_may_entries_in_test+1:len_dna_read)
     end
-    train_set_inds = setdiff(1:len_dna_read, test_set_inds)
+    # println("test_set_inds: ", test_set_inds)
+    train_set_inds = setdiff(shuffled_inds, test_set_inds)
     return train_set_inds, test_set_inds
+end
+
+function get_data_matrices2(dna_read, labels; 
+                           k_train=1, k_test=2, 
+                           FloatType=dat_t, 
+                           train_test_split_ratio=0.85,
+                           shuffle=true)
+    # set train_test_split_ratio = 1.0 if no test set is needed    
+    train_set_inds, test_set_inds = get_train_test_inds(dna_read, train_test_split_ratio, shuffle)
+# println(train_set_inds)
+    dna_read_train = @view dna_read[train_set_inds]
+    dna_read_test = @view dna_read[test_set_inds]    
+    labels_train = labels[train_set_inds]
+    labels_test = labels[test_set_inds]
+    
+    shuffled_dna_read_train = seq_shuffle.(dna_read_train; k=k_train);
+    data_matrix_train = data_2_dummy(dna_read_train; F=FloatType);
+    data_matrix_bg_train = data_2_dummy(shuffled_dna_read_train; F=FloatType);
+
+    shuffled_dna_read_test = seq_shuffle.(dna_read_test; k=k_test);
+    data_matrix_test = data_2_dummy(dna_read_test; F=FloatType);
+    data_matrix_bg_test = data_2_dummy(shuffled_dna_read_test; F=FloatType);
+    
+    # estimate the Markov background (order 1)
+    acgt_freq_train, markov_mat_train = est_1st_order_markov_bg(shuffled_dna_read_train; F=FloatType);
+    acgt_freq_test, markov_mat_test = est_1st_order_markov_bg(shuffled_dna_read_test; F=FloatType);
+    data_bg_prob_train = SeqShuffle.assign_bg_prob(shuffled_dna_read_train, markov_mat_train, acgt_freq_train);
+    data_bg_prob_test = SeqShuffle.assign_bg_prob(shuffled_dna_read_test, markov_mat_test, acgt_freq_test);
+   
+    return data_matrix_train, 
+           data_matrix_bg_train, 
+           data_bg_prob_train, 
+           acgt_freq_train, 
+           markov_mat_train, 
+           data_matrix_test,
+           data_matrix_bg_test,
+           data_bg_prob_test,
+           acgt_freq_test,
+           markov_mat_test,
+           length(dna_read_train),
+           length(dna_read_test),
+           train_set_inds,
+           test_set_inds,
+           labels_train,
+           labels_test
 end
 
 function get_data_matrices(dna_read; 
@@ -155,7 +204,7 @@ function get_data_matrices(dna_read;
                            shuffle=true)
     # set train_test_split_ratio = 1.0 if no test set is needed    
     train_set_inds, test_set_inds = get_train_test_inds(dna_read, train_test_split_ratio, shuffle)
-
+# println(train_set_inds)
     dna_read_train = @view dna_read[train_set_inds]
     dna_read_test = @view dna_read[test_set_inds]    
     

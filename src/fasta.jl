@@ -18,7 +18,7 @@ mutable struct FASTA_DNA_for_regressions{S <: Real}
     L::Int                                              # length of the dna strings in the training set
     N_test::Int                                         # number of dna strings in the test set
     L_test::Int                                         # length of the dna strings in the test set
-    raw_data_train::Vector{String}                      # raw data of the training set
+    raw_data::Vector{String}                            # raw data of the training set
     raw_data_test::Vector{String}                       # raw data of the test set
     data_matrix::Union{Array{S,3}, Array{S,2}}          # data array (one-hot, cpu) of the training set
     data_matrix_test::Union{Array{S,3}, Array{S,2}}     # data array (one-hot, cpu) of the training set
@@ -93,6 +93,77 @@ mutable struct FASTA_DNA_for_classifications{S <: Real}
     end
 end
 
+
+upper_vec(vec) = uppercase.(vec)
+
+mutable struct FASTA_DNA_regression2{S <: Real}
+    N::Int
+    L::Int
+    acgt_freq::Vector{S}
+    markov_bg_mat::Matrix{S}
+    raw_data::Vector{String}
+    raw_data_test::Vector{String}
+    data_matrix::Union{Array{S,3}, Array{S,2}}
+    data_matrix_gpu::Union{CuArray{S,3}, CuArray{S,2}, Nothing}
+    data_matrix_bg::Union{Array{S,3}, Array{S,2}}
+    data_matrix_bg_gpu::Union{CuArray{S,3}, CuArray{S,2}, Nothing}
+    labels::Union{Nothing, Vector{S}, Vector{Int}}
+    labels_test::Union{Nothing, Vector{S}, Vector{Int}}
+    meta_data::Union{Nothing, dna_meta_data}
+    acgt_freq_test::Union{Nothing, Vector{S}}
+    markov_bg_mat_test::Union{Nothing, Matrix{S}}
+    data_matrix_test::Union{Nothing, Array{S,3}, Array{S,2}}
+    data_matrix_bg_test::Union{Nothing, Array{S,3}, Array{S,2}}
+    N_test::Int
+
+    function FASTA_DNA_regression2{S}(fasta_location::String; 
+                        k_train=1, k_test=2, # kmer frequency in the test set 
+                        train_test_split_ratio=0.9,
+                        shuffle=true
+                        ) where {S <: Real}
+
+        dna_read = nothing; labels = nothing;
+        labels, dna_read = reading_for_DNA_regression(fasta_location; parse_float_type=S)
+        dna_read = upper_vec(dna_read)
+        # labels |> typeof |> println
+
+        # dna_read[2] |> println
+        data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat,
+            data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, 
+                markov_bg_mat_test, N_train, N_test, train_set_inds, test_set_inds,
+                    labels_train, labels_test = 
+                    get_data_matrices2(dna_read, labels; k_train=k_train, k_test=k_test, 
+                                  train_test_split_ratio=train_test_split_ratio, 
+                                  shuffle=shuffle, 
+                                  FloatType=S);
+        L = Int(size(data_matrix,1)/4);
+        # labels_train |> typeof |> println
+        data_matrix = reshape(data_matrix, 4*L, 1, N_train);
+        data_matrix_test = reshape(data_matrix_test, 4*L, 1, N_test)
+        data_matrix_bg = reshape(data_matrix_bg, 4*L, 1, N_train)
+        new(        
+            N_train,
+            L,
+            acgt_freq,
+            markov_bg_mat,
+            dna_read[train_set_inds],
+            dna_read[test_set_inds],
+            data_matrix,
+            nothing,
+            data_matrix_bg,
+            nothing,
+            labels_train,
+            labels_test,
+            nothing,
+            acgt_freq_test,
+            markov_bg_mat_test,
+            data_matrix_test,
+            data_matrix_bg_test,
+            N_test
+            )
+    end
+end
+
 mutable struct FASTA_DNA{S <: Real}
     N::Int
     L::Int
@@ -112,14 +183,52 @@ mutable struct FASTA_DNA{S <: Real}
     data_matrix_bg_test::Union{Nothing, Array{S,3}, Array{S,2}}
     N_test::Int
 
+    function FASTA_DNA{S}(dna_read::Vector{String};
+                          k_train=1, k_test=2, # kmer frequency in the test set 
+                          train_test_split_ratio=0.9,
+                          shuffle=true) where {S <: Real}
+        data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat,
+            data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, 
+                markov_bg_mat_test, N_train, N_test, train_set_inds, test_set_inds = 
+                get_data_matrices(dna_read; k_train=k_train, k_test=k_test, 
+                                  train_test_split_ratio=train_test_split_ratio, 
+                                  shuffle=shuffle, 
+                                  FloatType=S);
+        L = Int(size(data_matrix,1)/4);
+        data_matrix = reshape(data_matrix, 4*L, 1, N_train);
+        data_matrix_test = reshape(data_matrix_test, 4*L, 1, N_test)
+        data_matrix_bg = reshape(data_matrix_bg, 4*L, 1, N_train)
+        new(        
+            N_train,
+            L,
+            acgt_freq,
+            markov_bg_mat,
+            dna_read[train_set_inds],
+            dna_read[test_set_inds],
+            data_matrix,
+            nothing,
+            data_matrix_bg,
+            nothing,
+            nothing,
+            nothing,
+            acgt_freq_test,
+            markov_bg_mat_test,
+            data_matrix_test,
+            data_matrix_bg_test,
+            N_test
+            )
+    end
+
     function FASTA_DNA{S}(fasta_location::String; 
                         max_entries=max_num_read_fasta,
                         k_train=1, k_test=2, # kmer frequency in the test set 
                         train_test_split_ratio=0.9,
                         shuffle=true
-                        ) where {S <: Real}       
+                        ) where {S <: Real}
+
         dna_read = nothing; labels = nothing;
         dna_read = read_fasta(fasta_location; max_entries);
+        # dna_read[1] |> println
         data_matrix, data_matrix_bg, _, acgt_freq, markov_bg_mat,
             data_matrix_test, data_matrix_bg_test, _, acgt_freq_test, 
                 markov_bg_mat_test, N_train, N_test, train_set_inds, test_set_inds = 

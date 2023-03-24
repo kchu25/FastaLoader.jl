@@ -15,9 +15,9 @@ using Test
             train_test_split_ratio=0.9, shuffle=true, FloatType=Float32);
 
     @test typeof(dna_reads) == Vector{String}
-    @test sum(acgt_freq) == 1
-    @test sum(acgt_freq_test) == 1
-    @test all(sum(markov_bg_mat, dims=2) .== 1)
-    @test all(sum(markov_bg_mat_test, dims=2) .== 1)
+    @test isapprox(sum(acgt_freq), 1; atol=0.001)
+    @test isapprox(sum(acgt_freq_test), 1; atol=0.001)
+    @test all(sum(markov_bg_mat, dims=2) .≈ 1)
+    @test all(sum(markov_bg_mat_test, dims=2) .≈ 1)
 end
 
