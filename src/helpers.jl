@@ -5,7 +5,6 @@ reverse_complement(s::String) =
 get_count_map(v) = countmap(v)
 
 
-
 """
 Assume all dna strings are of the same length and contains no masked strings
 """
@@ -42,7 +41,6 @@ function read_and_permute(filepath::String; train_test_ratio=0.8, parse_float_ty
     labels, seqs = reading_for_DNA_regression(filepath; parse_float_type=parse_float_type)
     return permute_dataset(labels, seqs; train_test_ratio=train_test_ratio)
 end
-
 
 
 """
