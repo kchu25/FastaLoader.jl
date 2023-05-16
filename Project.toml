@@ -19,7 +19,7 @@ CUDA = "4.2.0"
 DataFrames = "1.5.0"
 Documenter = "0.27.24"
 DocumenterTools = "0.1.16"
-SeqShuffle = "0.2.0"
+SeqShuffle = "0.2.1"
 StatsBase = "0.33.21"
 julia = "1.9"
 

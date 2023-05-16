@@ -496,9 +496,9 @@ version = "1.3.18"
 
 [[deps.SeqShuffle]]
 deps = ["DocumenterTools", "Random"]
-git-tree-sha1 = "e79c19a66577b450af634c4318f7d011f2d0428e"
+git-tree-sha1 = "5839c3ae7e3702a0e6f93727df8808d342337053"
 uuid = "5ea955a8-74dc-49b5-be65-6ee01fc504f7"
-version = "0.2.0"
+version = "0.2.1"
 
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
