@@ -1,7 +1,7 @@
 name = "FastaLoader"
 uuid = "139838d8-4077-4d8a-94e1-e6dd554a184c"
 authors = ["Shane Kuei Hsien Chu (skchu@wustl.edu)"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"

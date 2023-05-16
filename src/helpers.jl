@@ -1,9 +1,7 @@
 reverse_complement(s::String) = 
     join(islowercase(s[si]) ? s[si] : DNA_complement[s[si]] for si = length(s):-1:1)
 
-
 get_count_map(v) = countmap(v)
-
 
 """
 Assume all dna strings are of the same length and contains no masked strings
@@ -157,7 +155,7 @@ function get_data_matrices2(dna_read, labels;
                            shuffle=true)
     # set train_test_split_ratio = 1.0 if no test set is needed    
     train_set_inds, test_set_inds = get_train_test_inds(dna_read, train_test_split_ratio, shuffle)
-# println(train_set_inds)
+    # println(train_set_inds)
     dna_read_train = @view dna_read[train_set_inds]
     dna_read_test = @view dna_read[test_set_inds]    
     labels_train = labels[train_set_inds]
@@ -202,7 +200,7 @@ function get_data_matrices(dna_read;
                            shuffle=true)
     # set train_test_split_ratio = 1.0 if no test set is needed    
     train_set_inds, test_set_inds = get_train_test_inds(dna_read, train_test_split_ratio, shuffle)
-# println(train_set_inds)
+    # println(train_set_inds)
     dna_read_train = @view dna_read[train_set_inds]
     dna_read_test = @view dna_read[test_set_inds]    
     
