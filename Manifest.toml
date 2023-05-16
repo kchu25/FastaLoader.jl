@@ -2,7 +2,7 @@
 
 julia_version = "1.9.0"
 manifest_format = "2.0"
-project_hash = "7f97979664a15fce633c860f562d480b9b6c78c7"
+project_hash = "64a3d39724c58163932c2fc84863bce1ba2f24c6"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -404,9 +404,9 @@ version = "1.6.0"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
-git-tree-sha1 = "7302075e5e06da7d000d9bfa055013e3e85578ca"
+git-tree-sha1 = "a5aef8d4a6e8d81f171b2bd4be5265b01384c74c"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.5.9"
+version = "2.5.10"
 
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
@@ -496,9 +496,9 @@ version = "1.3.18"
 
 [[deps.SeqShuffle]]
 deps = ["DocumenterTools", "Random"]
-git-tree-sha1 = "5839c3ae7e3702a0e6f93727df8808d342337053"
+git-tree-sha1 = "57e652241aaa02e6420aff8fbb489d564d178785"
 uuid = "5ea955a8-74dc-49b5-be65-6ee01fc504f7"
-version = "0.2.1"
+version = "0.2.2"
 
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
