@@ -1,7 +1,7 @@
 name = "FastaLoader"
 uuid = "139838d8-4077-4d8a-94e1-e6dd554a184c"
 authors = ["Shane Kuei Hsien Chu (skchu@wustl.edu)"]
-version = "0.2.1"
+version = "0.2.2"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -12,6 +12,7 @@ DocumenterTools = "35a29f4d-8980-5a13-9543-d66fff28ecb8"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SeqShuffle = "5ea955a8-74dc-49b5-be65-6ee01fc504f7"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+
 
 [compat]
 CSV = "0.10.11"
