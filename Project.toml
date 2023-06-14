@@ -14,13 +14,13 @@ SeqShuffle = "5ea955a8-74dc-49b5-be65-6ee01fc504f7"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
-CSV = "0.10.10"
-CUDA = "4.2.0"
+CSV = "0.10.11"
+CUDA = "4.3.2"
 DataFrames = "1.5.0"
 Documenter = "0.27.24"
 DocumenterTools = "0.1.16"
-SeqShuffle = "0.2.1"
 StatsBase = "0.33.21"
+SeqShuffle = "0.2.0"
 julia = "1.9"
 
 [extras]
